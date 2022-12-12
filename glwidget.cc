@@ -78,8 +78,11 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_U:modificadores.tasa_flash += 0.005;break;
       case Qt::Key_I:modificadores.tasa_flash -= 0.005;break;
 
-      case Qt::Key_F3:Draw_light = !Draw_light, flat = !flat;break;
-      case Qt::Key_F4:Draw_light = !Draw_light, gouraud = !gouraud;break;
+      case Qt::Key_F1:Draw_light = false;break;
+      case Qt::Key_F3:Draw_light = true, flat = !flat;break;
+      case Qt::Key_F4:Draw_light = true, gouraud = !gouraud;break;
+      case Qt::Key_F5:Draw_texture = !Draw_texture;break;
+
       case Qt::Key_J:luz0 = !luz0;break;
       case Qt::Key_K:luz1 = !luz1;break;
   }
@@ -218,7 +221,6 @@ void _gl_widget::draw_objects()
       else if (gouraud) glShadeModel(GL_SMOOTH);
 
       if (luz0) glEnable(GL_LIGHT0);
-      else glDisable(GL_LIGHT0);
 
       if (luz1){
           auto luz1_ambient = _vertex4f(1, 0, 1, 1);
@@ -226,11 +228,10 @@ void _gl_widget::draw_objects()
           auto luz1_spec = _vertex4f(1, 1, 1, 1);
           auto luz1_position = _vertex4f(-1, 1, 0, 0.3);
 
-          glMaterialf(GL_FRONT, GL_SHININESS, 50);
-          glMaterialf(GL_FRONT, GL_AMBIENT, luz1_ambient);
-          glMaterialf(GL_FRONT, GL_SPECULAR, luz1_spec);
-          glMaterialf(GL_FRONT, GL_DIFFUSE, luz1_diff);
-
+          glMaterialf(GL_FRONT, GL_SHININESS, 10);
+          glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1_ambient);
+          glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1_spec);
+          glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1_diff);
 
           glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1_position);
           glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1_ambient);
@@ -239,7 +240,11 @@ void _gl_widget::draw_objects()
 
           glEnable(GL_LIGHT1);
       }
-      else glDisable(GL_LIGHT1);
+  }
+  else if (!Draw_light) glDisable(GL_LIGHTING);
+
+  if (Draw_texture){
+
   }
 }
 
@@ -315,6 +320,18 @@ void _gl_widget::initializeGL()
   Draw_line=true;
   Draw_fill=false;
   Draw_chess=false;
+
+  Draw_light=false;
+  Draw_texture=false;
+
+  max_zoom  = false;
+  max_boton = false;
+  max_flash = false;
+
+  flat = false;
+  gouraud = false;
+  luz0 = false;
+  luz1 = false;
 }
 
 /*****************************************************************************//**

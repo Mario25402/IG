@@ -96,20 +96,22 @@ private:
   bool Draw_line;
   bool Draw_fill;
   bool Draw_chess;
+
   bool Draw_light;
+  bool Draw_texture;
 
   float Observer_angle_x;
   float Observer_angle_y;
   float Observer_distance;
 
-  bool max_zoom  = false;
-  bool max_boton = false;
-  bool max_flash = false;
+  bool max_zoom;
+  bool max_boton;
+  bool max_flash;
 
-  bool flat = false;
-  bool gouraud = false;
-  bool luz0 = false;
-  bool luz1 = false;
+  bool flat;
+  bool gouraud;
+  bool luz0;
+  bool luz1;
 };
 
 #endif
