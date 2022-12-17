@@ -24,6 +24,7 @@
 #include "sphere.h"
 #include "ply_object.h"
 #include "camara_headers/camara.h"
+#include "iluminacion.h"
 #include "dashboard.h"
 
 
@@ -40,7 +41,7 @@ namespace _gl_widget_ne {
 
   typedef enum {MODE_DRAW_POINT,MODE_DRAW_LINE,MODE_DRAW_FILL,MODE_DRAW_CHESS} _mode_draw;
   typedef enum {OBJECT_TETRAHEDRON,OBJECT_CUBE,OBJECT_CONE,OBJECT_CYLINDER,
-                OBJECT_SPHERE,OBJECT_PLY,OBJECT_HIERARCHICAL, OBJECT_DASHBOARD} _object;
+                OBJECT_SPHERE,OBJECT_PLY,OBJECT_HIERARCHICAL, OBJECT_DASHBOARD, OBJECT_GROUP} _object;
 }
 
 class _window;
@@ -108,10 +109,15 @@ private:
   bool max_boton;
   bool max_flash;
 
+  Iluminacion luz0;
+  Iluminacion luz1;
+
   bool flat;
   bool gouraud;
-  bool luz0;
-  bool luz1;
+  int num_mat;
+
+  bool perspectiva;
+  bool paralela;
 };
 
 #endif

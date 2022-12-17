@@ -8,6 +8,7 @@
 
 
 #include "glwidget.h"
+#include "qimagereader.h"
 #include "window.h"
 #include <iostream>
 
@@ -26,6 +27,20 @@ _gl_widget::_gl_widget(_window *Window1):Window(Window1)
 {
   setMinimumSize(300, 300);
   setFocusPolicy(Qt::StrongFocus);
+
+  // Code for reading an image
+  QString File_name("/home/mario/Escritorio/IG/texturas/dia_8192.jpg");
+  QImage Image;
+  QImageReader Reader (File_name);
+  Reader.setAutoTransform(true);
+  Image = Reader.read();
+  if (Image.isNull()) {
+    QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
+                             tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
+    exit(-1);
+  }
+  Image=Image.mirrored();
+  Image=Image.convertToFormat(QImage::Format_RGB888);
 }
 
 
@@ -47,11 +62,12 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_6:Object=OBJECT_PLY;break;
       case Qt::Key_7:Object=OBJECT_HIERARCHICAL;break;
       case Qt::Key_8:Object=OBJECT_DASHBOARD;break;
+      case Qt::Key_9:Object=OBJECT_GROUP;break;
 
       case Qt::Key_P:Draw_point=!Draw_point;break;
       case Qt::Key_L:Draw_line=!Draw_line;break;
       case Qt::Key_F:Draw_fill=!Draw_fill;break;
-      case Qt::Key_C:Draw_chess=!Draw_chess;break;
+      //case Qt::Key_C:Draw_chess=!Draw_chess;break;
 
       case Qt::Key_Left:Observer_angle_y-=ANGLE_STEP;break;
       case Qt::Key_Right:Observer_angle_y+=ANGLE_STEP;break;
@@ -78,13 +94,20 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_U:modificadores.tasa_flash += 0.005;break;
       case Qt::Key_I:modificadores.tasa_flash -= 0.005;break;
 
-      case Qt::Key_F1:Draw_light = false;break;
-      case Qt::Key_F3:Draw_light = true, flat = !flat;break;
-      case Qt::Key_F4:Draw_light = true, gouraud = !gouraud;break;
+      case Qt::Key_F1:Draw_fill = !Draw_fill;break;
+      case Qt::Key_F2:Draw_chess = !Draw_chess;break;
+      case Qt::Key_F3:Draw_light = !Draw_light, flat = true, gouraud = false;break;
+      case Qt::Key_F4:Draw_light = !Draw_light, gouraud = true, flat = false;break;
       case Qt::Key_F5:Draw_texture = !Draw_texture;break;
+      case Qt::Key_F6:flat = true, gouraud = false;break;
+      case Qt::Key_F7:gouraud= true, flat = false;break;
 
-      case Qt::Key_J:luz0 = !luz0;break;
-      case Qt::Key_K:luz1 = !luz1;break;
+      case Qt::Key_J:luz0.activada = !luz0.activada;break;
+      case Qt::Key_K:luz1.activada = !luz1.activada;break;
+      case Qt::Key_M:((++num_mat) %= 3);break;
+      case Qt::Key_C:perspectiva = true, paralela = false;break;
+      case Qt::Key_V:perspectiva = false, paralela = true;break;
+
   }
 
   update();
@@ -220,23 +243,68 @@ void _gl_widget::draw_objects()
       if (flat) glShadeModel(GL_FLAT);
       else if (gouraud) glShadeModel(GL_SMOOTH);
 
-      if (luz0) glEnable(GL_LIGHT0);
+      if (luz0.activada){
+          //luz0.posicion = _vertex4f(-1, 1, 0, 0.3);
+          luz0.ambiental = _vertex4f(1, 0, 1, 1);
+          luz0.difusa = _vertex4f(1, 1, 1, 1);
+          luz0.especular = _vertex4f(1, 1, 0, 1);
 
-      if (luz1){
-          auto luz1_ambient = _vertex4f(1, 0, 1, 1);
-          auto luz1_diff = _vertex4f(1, 1, 1, 1);
-          auto luz1_spec = _vertex4f(1, 1, 1, 1);
-          auto luz1_position = _vertex4f(-1, 1, 0, 0.3);
+          if (num_mat == 0){
+              glMaterialf(GL_FRONT, GL_SHININESS, 20);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
+          }
+          if (num_mat == 1){
+              glMaterialf(GL_FRONT, GL_SHININESS, 87);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
+          }
+          if (num_mat == 2){
+              glMaterialf(GL_FRONT, GL_SHININESS, 109);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
+          }
 
-          glMaterialf(GL_FRONT, GL_SHININESS, 10);
-          glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1_ambient);
-          glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1_spec);
-          glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1_diff);
+          glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&luz0.posicion);
+          glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&luz0.ambiental);
+          glLightfv(GL_LIGHT0, GL_DIFFUSE, (GLfloat*)&luz0.difusa);
+          glLightfv(GL_LIGHT0, GL_SPECULAR, (GLfloat*)&luz0.especular);
 
-          glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1_position);
-          glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1_ambient);
-          glLightfv(GL_LIGHT1, GL_DIFFUSE, (GLfloat*)&luz1_diff);
-          glLightfv(GL_LIGHT1, GL_SPECULAR, (GLfloat*)&luz1_spec);
+          glEnable(GL_LIGHT0);
+      }
+
+      if (luz1.activada){
+          luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
+          luz1.ambiental = _vertex4f(1, 0, 1, 1);
+          luz1.difusa = _vertex4f(1, 1, 1, 1);
+          luz1.especular = _vertex4f(1, 1, 0, 1);
+
+          if (num_mat == 0){
+              glMaterialf(GL_FRONT, GL_SHININESS, 20);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+          }
+          if (num_mat == 1){
+              glMaterialf(GL_FRONT, GL_SHININESS, 87);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+          }
+          if (num_mat == 2){
+              glMaterialf(GL_FRONT, GL_SHININESS, 109);
+              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+          }
+
+          glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1.posicion);
+          glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
+          glLightfv(GL_LIGHT1, GL_DIFFUSE, (GLfloat*)&luz1.difusa);
+          glLightfv(GL_LIGHT1, GL_SPECULAR, (GLfloat*)&luz1.especular);
 
           glEnable(GL_LIGHT1);
       }
@@ -244,6 +312,9 @@ void _gl_widget::draw_objects()
   else if (!Draw_light) glDisable(GL_LIGHTING);
 
   if (Draw_texture){
+      if (flat) glShadeModel(GL_FLAT);
+      else if (gouraud) glShadeModel(GL_SMOOTH);
+
 
   }
 }
@@ -330,8 +401,12 @@ void _gl_widget::initializeGL()
 
   flat = false;
   gouraud = false;
-  luz0 = false;
-  luz1 = false;
+  luz0.activada = false;
+  luz1.activada = false;
+  num_mat = 0;
+
+  perspectiva = true;
+  paralela = false;
 }
 
 /*****************************************************************************//**

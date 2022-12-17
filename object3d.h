@@ -25,8 +25,6 @@ class _object3D:public _basic_object3D
   vector<_vertex3ui> Triangles;
   vector<_vertex3f> Normales;
 
-  bool especular = true;
-
   void draw(int mode);
   void draw_line();
   void draw_fill();
@@ -34,8 +32,6 @@ class _object3D:public _basic_object3D
 
   void calcNormales();
   void calcNormalesGuoraud();
-
-  void setIluminación();
 };
 
 #endif // OBJECT3D_H

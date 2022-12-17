@@ -21,6 +21,7 @@ HEADERS += \
   cylinder.h \
   dashboard.h \
   file_ply_stl.h \
+  iluminacion.h \
   object3d.h \
   axis.h \
   ply_object.h \
