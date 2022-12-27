@@ -12,4 +12,11 @@ struct Iluminacion{
     _vertex4f especular;
 };
 
+struct Material{
+    float brillo;
+    _vertex3f ambiental;
+    _vertex3f difusa;
+    _vertex3f especular;
+};
+
 #endif // ILUMINACION_H

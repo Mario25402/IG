@@ -261,78 +261,7 @@ void _gl_widget::draw_objects()
 
   //////////////////////////////////Luces//////////////////////////////////////
   if (!Draw_light) glDisable(GL_LIGHTING);
-  else{
-      glEnable(GL_LIGHTING);
-
-      if (flat) glShadeModel(GL_FLAT);
-      else if (gouraud) glShadeModel(GL_SMOOTH);
-
-      if (luz0.activada){
-          //luz0.posicion = _vertex4f(-1, 1, 0, 0.3);
-          luz0.ambiental = _vertex4f(1, 0, 1, 1);
-          luz0.difusa = _vertex4f(1, 1, 1, 1);
-          luz0.especular = _vertex4f(1, 1, 0, 1);
-
-          if (num_mat == 0){
-              glMaterialf(GL_FRONT, GL_SHININESS, 20);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
-          }
-          if (num_mat == 1){
-              glMaterialf(GL_FRONT, GL_SHININESS, 87);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
-          }
-          if (num_mat == 2){
-              glMaterialf(GL_FRONT, GL_SHININESS, 109);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz0.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz0.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz0.especular);
-          }
-
-          glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&luz0.posicion);
-          glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&luz0.ambiental);
-          glLightfv(GL_LIGHT0, GL_DIFFUSE, (GLfloat*)&luz0.difusa);
-          glLightfv(GL_LIGHT0, GL_SPECULAR, (GLfloat*)&luz0.especular);
-
-          glEnable(GL_LIGHT0);
-      }
-
-      if (luz1.activada){
-          luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
-          luz1.ambiental = _vertex4f(1, 0, 1, 1);
-          luz1.difusa = _vertex4f(1, 1, 1, 1);
-          luz1.especular = _vertex4f(1, 1, 0, 1);
-
-          if (num_mat == 0){
-              glMaterialf(GL_FRONT, GL_SHININESS, 20);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-          }
-          if (num_mat == 1){
-              glMaterialf(GL_FRONT, GL_SHININESS, 87);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-          }
-          if (num_mat == 2){
-              glMaterialf(GL_FRONT, GL_SHININESS, 109);
-              glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-          }
-
-          glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1.posicion);
-          glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
-          glLightfv(GL_LIGHT1, GL_DIFFUSE, (GLfloat*)&luz1.difusa);
-          glLightfv(GL_LIGHT1, GL_SPECULAR, (GLfloat*)&luz1.especular);
-
-          glEnable(GL_LIGHT1);
-      }
-  }
+  else draw_light();
 
   ////////////////////////////////Texturas/////////////////////////////////////
   if (Draw_texture){
@@ -341,6 +270,107 @@ void _gl_widget::draw_objects()
       /*if (flat) glShadeModel(GL_FLAT);
       else if (gouraud) glShadeModel(GL_SMOOTH);*/
   }
+}
+
+/*****************************************************************************/
+/*                         Configuración luces                               */
+/*****************************************************************************/
+
+void _gl_widget::draw_light(){
+    glEnable(GL_LIGHTING);
+
+    /////////////////////////////////MODO//////////////////////////////////////
+    if (flat) glShadeModel(GL_FLAT);
+    else if (gouraud) glShadeModel(GL_SMOOTH);
+
+    ///////////////////////////////MATERIAL////////////////////////////////////
+    /// JADE
+    if (num_mat == 0){
+        m0.brillo = 12.8;
+        m0.ambiental = _vertex3f(0.135, 0.2225, 0.1575);
+        m0.difusa = _vertex3f(0.54, 0.89, 0.63);
+        m0.especular = _vertex3f(0.316228, 0.316228, 0.316228);
+
+        glMaterialf(GL_FRONT, GL_SHININESS, m0.brillo);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m0.ambiental);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m0.difusa);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m0.especular);
+    }
+
+    /// CYAN PLASTIC
+    if (num_mat == 1){
+        m1.brillo = 32;
+        m1.ambiental = _vertex3f(0.0, 0.1, 0.06);
+        m1.difusa = _vertex3f(0.0, 0.50980392, 0.50980392);
+        m1.especular = _vertex3f(0.50980392, 0.50980392, 0.50980392);
+
+        glMaterialf(GL_FRONT, GL_SHININESS, m1.brillo);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m1.ambiental);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m1.difusa);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m1.especular);
+    }
+
+    /// YELLOW RUBBER
+    if (num_mat == 2){
+        m2.brillo = 100;
+        m2.ambiental = _vertex3f(0.05, 0.05 , 0.0);
+        m2.difusa = _vertex3f(0.5 , 0.5, 0.4);
+        m2.especular = _vertex3f(0.7, 0.7, 0.04);
+
+        glMaterialf(GL_FRONT, GL_SHININESS, m2.brillo);
+        glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m2.ambiental);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m2.difusa);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m2.especular);
+    }
+
+    ////////////////////////////////LUZ 0//////////////////////////////////////
+    if (luz0.activada){
+        //luz0.posicion = _vertex4f(-1, 1, 0, 0.3);
+        luz0.ambiental = _vertex4f(1, 0, 1, 1);
+        luz0.difusa = _vertex4f(1, 1, 1, 1);
+        luz0.especular = _vertex4f(1, 1, 0, 1);
+
+        glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&luz0.posicion);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&luz0.ambiental);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, (GLfloat*)&luz0.difusa);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, (GLfloat*)&luz0.especular);
+
+        glEnable(GL_LIGHT0);
+    }
+
+    /////////////////////////////////LUZ 1/////////////////////////////////////
+    if (luz1.activada){
+        luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
+        luz1.ambiental = _vertex4f(1, 0, 1, 1);
+        luz1.difusa = _vertex4f(1, 1, 1, 1);
+        luz1.especular = _vertex4f(1, 1, 0, 1);
+
+        if (num_mat == 0){
+            glMaterialf(GL_FRONT, GL_SHININESS, 20);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+        }
+        if (num_mat == 1){
+            glMaterialf(GL_FRONT, GL_SHININESS, 87);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+        }
+        if (num_mat == 2){
+            glMaterialf(GL_FRONT, GL_SHININESS, 109);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
+        }
+
+        glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1.posicion);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, (GLfloat*)&luz1.difusa);
+        glLightfv(GL_LIGHT1, GL_SPECULAR, (GLfloat*)&luz1.especular);
+
+        glEnable(GL_LIGHT1);
+    }
 }
 
 /*****************************************************************************/
@@ -458,7 +488,7 @@ void _gl_widget::initializeGL()
   gouraud = false;
   luz0.activada = false;
   luz1.activada = false;
-  num_mat = 0;
+  num_mat = -1;
 
   perspectiva = true;
   old_x = Observer_angle_x;
@@ -521,4 +551,74 @@ void _gl_widget::animacion()
     }
 
     update();
+}
+
+/*****************************************************************************/
+/*                                  Pick                                     */
+/*****************************************************************************/
+
+void _gl_widget::pick()
+{
+  makeCurrent();
+
+  // Frame Buffer Object to do the off-screen rendering
+  GLuint FBO;
+  glGenFramebuffers(1,&FBO);
+  glBindFramebuffer(GL_FRAMEBUFFER,FBO);
+
+  // Texture for drawing
+  GLuint Color_texture;
+  glGenTextures(1,&Color_texture);
+  glBindTexture(GL_TEXTURE_2D,Color_texture);
+  // RGBA8
+  glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, Window->width(),Window->height());
+  // this implies that there is not mip mapping
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+  // Texure for computing the depth
+  GLuint Depth_texture;
+  glGenTextures(1,&Depth_texture);
+  glBindTexture(GL_TEXTURE_2D,Depth_texture);
+  // Float
+  glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, Window->width(),Window->height());
+
+  // Attatchment of the textures to the FBO
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,Color_texture,0);
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,Depth_texture,0);
+
+  // OpenGL will draw to these buffers (only one in this case)
+  static const GLenum Draw_buffers[]={GL_COLOR_ATTACHMENT0};
+  glDrawBuffers(1,Draw_buffers);
+
+  /*************************/
+
+  // dibujar escena para seleccion
+
+  /*************************/
+
+  // get the pixel
+  int Color;
+  glReadBuffer(GL_FRONT);
+  glPixelStorei(GL_PACK_ALIGNMENT,1);
+  //glReadPixels(Selection_position_x,Selection_position_y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&Color);
+
+  /*************************/
+
+  // convertir de RGB a identificador
+
+  /*Red = (Position & 0x00FF0000) >> 16;
+  Green = (Position & 0x0000FF00) >> 8;
+  Blue = (Position & 0x000000FF);*/
+
+
+  // actualizar el identificador de la parte seleccionada en el objeto
+
+  /*************************/
+
+  glDeleteTextures(1,&Color_texture);
+  glDeleteTextures(1,&Depth_texture);
+  glDeleteFramebuffers(1,&FBO);
+  // the normal framebuffer takes the control of drawing
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER,defaultFramebufferObject());
 }

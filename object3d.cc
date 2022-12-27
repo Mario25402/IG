@@ -78,19 +78,10 @@ void _object3D::calcNormales()
     Normales.resize(Triangles.size());
 
     for (unsigned long i = 0; i < Triangles.size(); ++i){
-        float Ax = Vertices[Triangles[i]._1].x - Vertices[Triangles[i]._0].x;
-        float Ay = Vertices[Triangles[i]._1].y - Vertices[Triangles[i]._0].y;
-        float Az = Vertices[Triangles[i]._1].z - Vertices[Triangles[i]._0].z;
+        _vertex3f a = Vertices[Triangles[i]._1] - Vertices[Triangles[i]._0];
+        _vertex3f b = Vertices[Triangles[i]._2] - Vertices[Triangles[i]._0];
 
-        float Bx = Vertices[Triangles[i]._2].x - Vertices[Triangles[i]._0].x;
-        float By = Vertices[Triangles[i]._2].y - Vertices[Triangles[i]._0].y;
-        float Bz = Vertices[Triangles[i]._2].z - Vertices[Triangles[i]._0].z;
-
-        float Nx = (Ay * Bz) - (Az * By);
-        float Ny = (Ax * Bz) - (Az * Bx);
-        float Nz = (Ax * By) - (Ay * Bx);
-
-        Normales[i] = _vertex3f(Nx,Ny,Nz);
+        Normales[i] = a.cross_product(b);
         Normales[i].normalize();
     }
 }

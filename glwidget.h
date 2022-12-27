@@ -76,6 +76,8 @@ protected:
   void keyPressEvent(QKeyEvent *Keyevent) Q_DECL_OVERRIDE;
   void mouseMoveEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
   void mouseZoomEvent(QWheelEvent *Event);
+  void pick();
+  void draw_light();
 
 
 private:
@@ -110,6 +112,7 @@ private:
   bool max_zoom, max_boton, max_flash;
 
   Iluminacion luz0, luz1;
+  Material m0, m1, m2;
 
   bool flat, gouraud;
   int num_mat;

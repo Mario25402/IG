@@ -56,8 +56,8 @@ _dashboard::_dashboard(float Size){
 
 _dashboard::_dashboard(float Size, int n)
 {
-    Vertices.resize((n^2) * 4);
-    Triangles.resize((n^2) * 2);
+    Vertices.resize((n*n) * 4);
+    Triangles.resize((n*n) * 2);
     VerticesTextura.resize(Vertices.size());
 
     int filas = n, columnas = n;
@@ -65,18 +65,18 @@ _dashboard::_dashboard(float Size, int n)
     float fila, tamTextura = 1, filaTextura;
 
     for (int i = 0; i < filas; ++i){
-        fila = Size/2-i*Size/columnas;
-        filaTextura = tamTextura-i*tamTextura/columnas;
+        fila = Size/2 - (i * Size/columnas);
+        filaTextura = tamTextura - (i * tamTextura/columnas);
 
         for (int j = 0; j < columnas; ++j)
         {
-            VerticesTextura[k] = _vertex2f(j*tamTextura/columnas, filaTextura);
+            VerticesTextura[k] = _vertex2f(j * tamTextura/columnas, filaTextura);
             Vertices[k]= _vertex3f(j * Size/columnas - Size/2, fila, 0);
 
             VerticesTextura[k+1] = _vertex2f(VerticesTextura[k].x +  tamTextura/columnas, filaTextura);
             Vertices[k+1]= _vertex3f(Vertices[k].x + Size/columnas, Vertices[k].y, 0);
 
-            VerticesTextura[k+2] = _vertex2f(VerticesTextura[k+1].x,filaTextura -  tamTextura/columnas);
+            VerticesTextura[k+2] = _vertex2f(VerticesTextura[k+1].x, filaTextura -  tamTextura/columnas);
             Vertices[k+2]= _vertex3f(Vertices[k+1].x, Vertices[k].y - Size/columnas, 0);
 
             VerticesTextura[k+3] = _vertex2f(VerticesTextura[k].x, VerticesTextura[k+2].y);
