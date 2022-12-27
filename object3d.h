@@ -24,6 +24,7 @@ class _object3D:public _basic_object3D
   public:
   vector<_vertex3ui> Triangles;
   vector<_vertex3f> Normales;
+  vector<_vertex2f> VerticesTextura;
 
   void draw(int mode);
   void draw_line();

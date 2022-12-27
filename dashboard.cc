@@ -1,8 +1,7 @@
 #include "dashboard.h"
 
 _dashboard::_dashboard(float Size){
-
-    /*Vertices.resize(4);
+    Vertices.resize(4);
     Triangles.resize(2);
 
     Vertices[0]=_vertex3f(-Size/2,Size/2,0);
@@ -11,9 +10,9 @@ _dashboard::_dashboard(float Size){
     Vertices[3]=_vertex3f(Size/2,Size/2,0);
 
     Triangles[0]=_vertex3ui(0,1,2);
-    Triangles[1]=_vertex3ui(0,2,3);*/
+    Triangles[1]=_vertex3ui(0,2,3);
 
-    Vertices.resize(16);
+    /*Vertices.resize(16);
     Triangles.resize(18);
 
     Vertices[0] = _vertex3f(-1.5,1.5,0);
@@ -50,7 +49,65 @@ _dashboard::_dashboard(float Size){
     Triangles[14] = _vertex3ui(11,15,10);
     Triangles[15] = _vertex3ui(11,12,15);
     Triangles[16] = _vertex3ui(12,14,15);
-    Triangles[17] = _vertex3ui(12,13,14);
+    Triangles[17] = _vertex3ui(12,13,14);*/
 
     calcNormales();
+}
+
+_dashboard::_dashboard(float Size, int n)
+{
+    Vertices.resize((n^2) * 4);
+    Triangles.resize((n^2) * 2);
+    VerticesTextura.resize(Vertices.size());
+
+    int filas = n, columnas = n;
+    int triangulo = 0, k = 0;
+    float fila, tamTextura = 1, filaTextura;
+
+    for (int i = 0; i < filas; ++i){
+        fila = Size/2-i*Size/columnas;
+        filaTextura = tamTextura-i*tamTextura/columnas;
+
+        for (int j = 0; j < columnas; ++j)
+        {
+            VerticesTextura[k] = _vertex2f(j*tamTextura/columnas, filaTextura);
+            Vertices[k]= _vertex3f(j * Size/columnas - Size/2, fila, 0);
+
+            VerticesTextura[k+1] = _vertex2f(VerticesTextura[k].x +  tamTextura/columnas, filaTextura);
+            Vertices[k+1]= _vertex3f(Vertices[k].x + Size/columnas, Vertices[k].y, 0);
+
+            VerticesTextura[k+2] = _vertex2f(VerticesTextura[k+1].x,filaTextura -  tamTextura/columnas);
+            Vertices[k+2]= _vertex3f(Vertices[k+1].x, Vertices[k].y - Size/columnas, 0);
+
+            VerticesTextura[k+3] = _vertex2f(VerticesTextura[k].x, VerticesTextura[k+2].y);
+            Vertices[k+3]= _vertex3f(Vertices[k].x, Vertices[k+2].y, 0);
+
+            Triangles[triangulo] = _vertex3ui(k, k+3, k+2);
+            Triangles[triangulo+1] = _vertex3ui(k, k+2, k+1);
+
+            k += 4;
+            triangulo += 2;
+        }
+    }
+
+    calcNormales();
+}
+
+void _dashboard::draw_texture()
+{
+    glEnable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    glBegin(GL_TRIANGLES);
+
+    for (unsigned int i = 0; i < Triangles.size(); ++i){
+        glTexCoord2f(VerticesTextura[Triangles[i]._0].x, VerticesTextura[Triangles[i]._0].y);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
+        glTexCoord2f(VerticesTextura[Triangles[i]._1].x, VerticesTextura[Triangles[i]._1].y);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
+        glTexCoord2f(VerticesTextura[Triangles[i]._2].x, VerticesTextura[Triangles[i]._2].y);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
+    }
+
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }

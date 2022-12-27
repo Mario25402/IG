@@ -62,8 +62,10 @@ SOURCES += \
   glwidget.cc \
   window.cc
 
+INCLUDEPATH += /home/dmartin/codigo/funciontecas/glew/include
 
-LIBS += -L/usr/X11R6/lib64 -lGL
+LIBS += -L/home/mario/codigo/funciontecas/glew/lib -lGLEW \
+-L/usr/X11R6/lib64 -lGL
 
 
 CONFIG += c++11

@@ -4,17 +4,23 @@ using namespace std;
 
 /*******************************************************/
 
-_sphere::_sphere()
-{
-    /*for (int i = 0; i < 12; ++i){
-        cout << "Conjunto " << i << endl
-             << "Vertice 1: " << 1*cos(M_PI*i/11-M_PI/2) << "\t"
-             << "Vertice 2: " << 1*sin(M_PI*i/11-M_PI/2) << "\t"
-             << "Vertice 3: " << "0\n" << endl;
-    }*/
-
+_sphere::_sphere(){
     _plyObject ply(PERFIL);
     vector <_vertex3f> Perfil = ply.getVertices();
-    _rotation rotation(50, Perfil, Vertices, Triangles);
+    _rotation rotation(100, Perfil, Vertices, Triangles);
+    calcNormales();
+}
+
+_sphere::_sphere(int n){
+    vector <_vertex3f> Perfil;
+
+    for (int i = 0; i < n; ++i){
+        float x = 1*cos(M_PI*i/(n-1)-M_PI/2);
+        float y = 1*sin(M_PI*i/(n-1)-M_PI/2);
+
+        Perfil.push_back(_vertex3f(x,y,0));
+    }
+
+    _rotation rotation(100, Perfil, Vertices, Triangles);
     calcNormales();
 }

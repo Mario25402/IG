@@ -6,7 +6,7 @@
  * GPL 3
  */
 
-
+#include <GL/glew.h>
 #include "glwidget.h"
 #include "qimagereader.h"
 #include "window.h"
@@ -17,39 +17,19 @@ using namespace _gl_widget_ne;
 using namespace _colors_ne;
 
 
-/*****************************************************************************//**
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                               Constructor                                 */
+/*****************************************************************************/
 
 _gl_widget::_gl_widget(_window *Window1):Window(Window1)
 {
   setMinimumSize(300, 300);
   setFocusPolicy(Qt::StrongFocus);
-
-  // Code for reading an image
-  QString File_name("/home/mario/Escritorio/IG/texturas/dia_8192.jpg");
-  QImage Image;
-  QImageReader Reader (File_name);
-  Reader.setAutoTransform(true);
-  Image = Reader.read();
-  if (Image.isNull()) {
-    QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-                             tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
-    exit(-1);
-  }
-  Image=Image.mirrored();
-  Image=Image.convertToFormat(QImage::Format_RGB888);
 }
 
-
-/*****************************************************************************//**
- * Evento tecla pulsada
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                        Evento tecla pulsada                               */////////////////
+/*****************************************************************************/
 
 void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
 {
@@ -105,21 +85,68 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_J:luz0.activada = !luz0.activada;break;
       case Qt::Key_K:luz1.activada = !luz1.activada;break;
       case Qt::Key_M:((++num_mat) %= 3);break;
-      case Qt::Key_C:perspectiva = true, paralela = false;break;
-      case Qt::Key_V:perspectiva = false, paralela = true;break;
+      case Qt::Key_C:perspectiva = true;break;
+      case Qt::Key_V:perspectiva = false;break;
 
   }
 
   update();
 }
 
+/*****************************************************************************/
+/*                            Zoom de ratón                                  *////////////////////////
+/*****************************************************************************/
 
-/*****************************************************************************//**
- * Limpiar ventana
- *
- *
- *
- *****************************************************************************/
+void _gl_widget::mouseZoomEvent(QWheelEvent *Event){
+    int dist = Event->angleDelta().y();
+
+    if (perspectiva){
+        if (dist > 0){
+            if (Observer_distance > 0)
+                Observer_distance -= 0.2;
+        }
+        else if (dist < 0)
+            Observer_distance += 0.2;
+    }
+
+    else{
+        if (dist > 0){
+            if (vista > 0.01)
+                vista -= 0.01;
+        }
+        else if (dist < 0.01)
+            vista += 0.01;
+    }
+
+    Event->accept();
+    update();
+}
+
+/*****************************************************************************/
+/*                          Movimiento de ratón                              */
+/*****************************************************************************/
+
+void _gl_widget::mouseMoveEvent(QMouseEvent *Event)
+{
+    int x = Event->position().x();
+    int y = Event->position().y();
+
+    if (old_x < x) Observer_angle_y += ANGLE_STEP*2;
+    else if (old_x > x) Observer_angle_y -= ANGLE_STEP*2;
+
+    if (old_y < y) Observer_angle_x += ANGLE_STEP*2;
+    else if (old_y > y) Observer_angle_x -= ANGLE_STEP*2;
+
+    old_x = x;
+    old_y = y;
+
+    update();
+}
+
+
+/*****************************************************************************/
+/*                            Limpiar ventana                                */
+/*****************************************************************************/
 
 void _gl_widget::clear_window()
 {
@@ -128,12 +155,9 @@ void _gl_widget::clear_window()
 
 
 
-/*****************************************************************************//**
- * Funcion para definir la transformación de proyeccion
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                     Transformación de proyección                          */
+/*****************************************************************************/
 
 void _gl_widget::change_projection()
 {
@@ -142,17 +166,15 @@ void _gl_widget::change_projection()
 
   // formato(x_minimo,x_maximo, y_minimo, y_maximo,Front_plane, plano_traser)
   // Front_plane>0  Back_plane>PlanoDelantero)
-  glFrustum(X_MIN,X_MAX,Y_MIN,Y_MAX,FRONT_PLANE_PERSPECTIVE,BACK_PLANE_PERSPECTIVE);
+  if (perspectiva) glFrustum(X_MIN,X_MAX,Y_MIN,Y_MAX,FRONT_PLANE_PERSPECTIVE, BACK_PLANE_PERSPECTIVE);
+  else glOrtho(X_MIN / vista, X_MAX / vista, Y_MIN / vista, Y_MAX / vista, FRONT_PLANE_PERSPECTIVE, 10000);
 }
 
 
 
-/*****************************************************************************//**
- * Funcion para definir la transformación de vista (posicionar la camara)
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                           Posicionar cámara                               */
+/*****************************************************************************/
 
 void _gl_widget::change_observer()
 {
@@ -164,18 +186,15 @@ void _gl_widget::change_observer()
   glRotatef(Observer_angle_y,0,1,0);
 }
 
-
-/*****************************************************************************//**
- * Funcion que dibuja los objetos
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                            Dibujo de objetos                              *////////////////////
+/*****************************************************************************/
 
 void _gl_widget::draw_objects()
 {
   Axis.draw_line();
 
+  /////////////////////////////////Puntos//////////////////////////////////////
   if (Draw_point){
     glPointSize(5);
     glColor3fv((GLfloat *) &MAGENTA);
@@ -192,6 +211,7 @@ void _gl_widget::draw_objects()
     }
   }
 
+  /////////////////////////////////Lineas//////////////////////////////////////
   if (Draw_line){
     glLineWidth(3);
     glColor3fv((GLfloat *) &BLUE);
@@ -208,6 +228,7 @@ void _gl_widget::draw_objects()
     }
   }
 
+  /////////////////////////////////Relleno/////////////////////////////////////
   if (Draw_fill){
     glColor3fv((GLfloat *) &BLACK);
     switch (Object){
@@ -223,6 +244,7 @@ void _gl_widget::draw_objects()
     }
   }
 
+  /////////////////////////////////Ajedrez/////////////////////////////////////
   if (Draw_chess){
     switch (Object){
     case OBJECT_TETRAHEDRON:Tetrahedron.draw(3);break;
@@ -237,7 +259,9 @@ void _gl_widget::draw_objects()
     }
   }
 
-  if (Draw_light){
+  //////////////////////////////////Luces//////////////////////////////////////
+  if (!Draw_light) glDisable(GL_LIGHTING);
+  else{
       glEnable(GL_LIGHTING);
 
       if (flat) glShadeModel(GL_FLAT);
@@ -309,24 +333,19 @@ void _gl_widget::draw_objects()
           glEnable(GL_LIGHT1);
       }
   }
-  else if (!Draw_light) glDisable(GL_LIGHTING);
 
+  ////////////////////////////////Texturas/////////////////////////////////////
   if (Draw_texture){
-      if (flat) glShadeModel(GL_FLAT);
-      else if (gouraud) glShadeModel(GL_SMOOTH);
+      if (Object==OBJECT_DASHBOARD) Tablero.draw_texture();
 
-
+      /*if (flat) glShadeModel(GL_FLAT);
+      else if (gouraud) glShadeModel(GL_SMOOTH);*/
   }
 }
 
-
-
-/*****************************************************************************//**
- * Evento de dibujado
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                            Evento de dibujo                               */
+/*****************************************************************************/
 
 void _gl_widget::paintGL()
 {
@@ -337,28 +356,37 @@ void _gl_widget::paintGL()
 }
 
 
-/*****************************************************************************//**
- * Evento de cambio de tamaño de la ventana
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                       Evento resize ventana                               */
+/*****************************************************************************/
 
 void _gl_widget::resizeGL(int Width1, int Height1)
 {
   glViewport(0,0,Width1,Height1);
 }
 
-
-/*****************************************************************************//**
- * Inicialización de OpenGL
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                       Inicialización de OpenGL                            */////////////////////
+/*****************************************************************************/
 
 void _gl_widget::initializeGL()
 {
+
+  /////////////////////////////////GLEW////////////////////////////////////////
+
+  /*glewExperimental = GL_TRUE;
+  int err = glewInit();
+  if (GLEW_OK != err){
+    QMessageBox MsgBox(this);
+    MsgBox.setText("Error: There is not OpenGL drivers\n\nPlease, "
+                   "look for the information of your GPU "
+                   "(AMD, INTEL or NVIDIA) and install the drivers");
+    MsgBox.exec();
+    Window->close();
+  }*/
+
+  ////////////////////////////////Programa/////////////////////////////////////
+
   const GLubyte* strm;
 
   strm = glGetString(GL_VENDOR);
@@ -381,7 +409,34 @@ void _gl_widget::initializeGL()
   std::cerr << "Max texture size: " << Max_texture_size << "\n";
 
   glClearColor(1.0,1.0,1.0,1.0);
-  glEnable(GL_DEPTH_TEST);;
+  glEnable(GL_DEPTH_TEST);
+
+  ////////////////////////////////Texturas/////////////////////////////////////
+
+  // Code for reading an image
+  QString File_name("/home/mario/Escritorio/IG/texturas/dia_8192.jpg");
+  QImageReader Reader(File_name);
+  Reader.setAutoTransform(true);
+  QImage Image = Reader.read();
+  if (Image.isNull()){
+      QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
+                               tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
+      exit(-1);
+  }
+  Image = Image.mirrored();
+  Image = Image.convertToFormat(QImage::Format_RGB888);
+
+  // Code to control the application of the texture
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+  // Code to pass the image to OpenGL to form a texture 2D
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, Image.width(), Image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, Image.bits());
+
+  /////////////////////////////////Variables///////////////////////////////////
 
   Observer_angle_x=0;
   Observer_angle_y=0;
@@ -406,15 +461,14 @@ void _gl_widget::initializeGL()
   num_mat = 0;
 
   perspectiva = true;
-  paralela = false;
+  old_x = Observer_angle_x;
+  old_y = Observer_angle_y;
+  vista = 0.05;
 }
 
-/*****************************************************************************//**
- * Especificación de la animación
- *
- *
- *
- *****************************************************************************/
+/*****************************************************************************/
+/*                              Animación                                    */
+/*****************************************************************************/
 
 void _gl_widget::animacion()
 {
@@ -468,5 +522,3 @@ void _gl_widget::animacion()
 
     update();
 }
-
-/****************************************************************s*/

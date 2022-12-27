@@ -6,11 +6,11 @@ using namespace std;
 /************************************************************/
 
 // Constructor por defecto, cualquier archivo se creará dada la ruta
-// en este caso para probarla, usaremos la hormiga
+// en este caso para probarla, usaremos a beethoven
 
 _plyObject::_plyObject()
 {
-    file.open("/home/mario/Escritorio/IG/ply_models/ant.ply");
+    file.open("/home/mario/Escritorio/IG/ply_models/beethoven.ply");
     file.read(coordenadas, posiciones);
     file.close();
 

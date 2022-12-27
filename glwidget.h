@@ -74,6 +74,8 @@ protected:
   void paintGL() Q_DECL_OVERRIDE;
   void initializeGL() Q_DECL_OVERRIDE;
   void keyPressEvent(QKeyEvent *Keyevent) Q_DECL_OVERRIDE;
+  void mouseMoveEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
+  void mouseZoomEvent(QWheelEvent *Event);
 
 
 private:
@@ -84,10 +86,10 @@ private:
   _cube Cube;
   _cone Cone;
   _cylinder Cylinder;
-  _sphere Sphere;
+  _sphere Sphere{25};
   _plyObject Ply;
   Camara Hierarchical;
-  _dashboard Tablero;
+  _dashboard Tablero{1,4};
 
   GradosLibertad modificadores;
 
@@ -105,19 +107,16 @@ private:
   float Observer_angle_y;
   float Observer_distance;
 
-  bool max_zoom;
-  bool max_boton;
-  bool max_flash;
+  bool max_zoom, max_boton, max_flash;
 
-  Iluminacion luz0;
-  Iluminacion luz1;
+  Iluminacion luz0, luz1;
 
-  bool flat;
-  bool gouraud;
+  bool flat, gouraud;
   int num_mat;
 
   bool perspectiva;
-  bool paralela;
+  int old_x, old_y;
+  float vista;
 };
 
 #endif

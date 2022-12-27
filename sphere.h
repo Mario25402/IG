@@ -11,6 +11,7 @@ class _sphere : public _object3D
     const string PERFIL = "/home/mario/Escritorio/IG/ply_models/sphere.ply";
 public:
     _sphere();
+    _sphere(int n);
 };
 
 /*******************************************************/
