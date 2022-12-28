@@ -82,8 +82,8 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_F6:flat = true, gouraud = false;break;
       case Qt::Key_F7:gouraud= true, flat = false;break;
 
-      case Qt::Key_J:luz0.activada = !luz0.activada;break;
-      case Qt::Key_K:luz1.activada = !luz1.activada;break;
+      case Qt::Key_J:luz0.activada = true, luz1.activada = false;break;
+      case Qt::Key_K:luz1.activada = true, luz0.activada = false;break;
       case Qt::Key_M:((++num_mat) %= 3);break;
       case Qt::Key_C:perspectiva = true;break;
       case Qt::Key_V:perspectiva = false;break;
@@ -322,6 +322,8 @@ void _gl_widget::draw_light(){
 
     ////////////////////////////////LUZ 0//////////////////////////////////////
     if (luz0.activada){
+        glDisable(GL_LIGHT1);
+
         luz0.posicion = _vertex4f(1, 1, 1, 0);
         luz0.ambiental = _vertex4f(1, 0, 1, 1);
         luz0.difusa = _vertex4f(1, 1, 1, 1);
@@ -337,7 +339,8 @@ void _gl_widget::draw_light(){
 
     /////////////////////////////////LUZ 1/////////////////////////////////////
     if (luz1.activada){
-        luz0.activada = false;
+        glDisable(GL_LIGHT0);
+
         luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
         luz1.ambiental = _vertex4f(1, 0, 1, 1);
         luz1.difusa = _vertex4f(1, 1, 1, 1);
@@ -347,6 +350,11 @@ void _gl_widget::draw_light(){
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
         glLightfv(GL_LIGHT1, GL_DIFFUSE, (GLfloat*)&luz1.difusa);
         glLightfv(GL_LIGHT1, GL_SPECULAR, (GLfloat*)&luz1.especular);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glRotatef(luz1.angulo, 0, 1, 0);
+        glPopMatrix();
 
         glEnable(GL_LIGHT1);
     }
@@ -463,6 +471,11 @@ void _gl_widget::initializeGL()
   max_boton = false;
   max_flash = false;
 
+  num_mat = 0;
+  flat = true, gouraud = false;
+  luz0.activada = true; luz1.activada = false;
+  luz1.angulo = 0;
+
   perspectiva = true;
   old_x = Observer_angle_x;
   old_y = Observer_angle_y;
@@ -521,6 +534,9 @@ void _gl_widget::animacion()
         else{
             modificadores.flash -= modificadores.tasa_flash;
         }
+
+        ///////////////////////////////LUZ///////////////////////////////////
+        luz1.angulo += 50;
     }
 
     update();
