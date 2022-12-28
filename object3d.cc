@@ -12,6 +12,8 @@
 using namespace _colors_ne;
 
 /*****************************************************************************/
+/*                      Función de dibujado base                             */
+/*****************************************************************************/
 
 
 void _object3D::draw(int mode)
@@ -23,6 +25,10 @@ void _object3D::draw(int mode)
         case 3: draw_chess(); break;
     }
 }
+
+/*****************************************************************************/
+/*                              Modo lineas                                  */
+/*****************************************************************************/
 
 void _object3D::draw_line()
 {
@@ -37,6 +43,10 @@ void _object3D::draw_line()
 
      glEnd();
 }
+
+/*****************************************************************************/
+/*                             Modo relleno                                  */
+/*****************************************************************************/
 
 void _object3D::draw_fill()
 {
@@ -54,6 +64,10 @@ void _object3D::draw_fill()
      glEnd();
 }
 
+/*****************************************************************************/
+/*                             Modo ajedrez                                  */
+/*****************************************************************************/
+
 void _object3D::draw_chess()
 {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -70,6 +84,10 @@ void _object3D::draw_chess()
 
      glEnd();
 }
+
+/*****************************************************************************/
+/*                             Modo textura                                  */
+/*****************************************************************************/
 
 void _object3D::draw_texture()
 {
@@ -91,21 +109,33 @@ void _object3D::draw_texture()
 }
 
 /*****************************************************************************/
+/*                        Calculo de normales                                */
+/*****************************************************************************/
 
-void _object3D::calcNormales()
+void _object3D::calcNormales(int modo)
 {
-    Normales.resize(Triangles.size());
+    if (modo == 0){
+        Normales.resize(Triangles.size());
 
-    for (unsigned long i = 0; i < Triangles.size(); ++i){
-        _vertex3f a = Vertices[Triangles[i]._1] - Vertices[Triangles[i]._0];
-        _vertex3f b = Vertices[Triangles[i]._2] - Vertices[Triangles[i]._0];
+        for (unsigned long i = 0; i < Triangles.size(); ++i){
+            _vertex3f a = Vertices[Triangles[i]._1] - Vertices[Triangles[i]._0];
+            _vertex3f b = Vertices[Triangles[i]._2] - Vertices[Triangles[i]._0];
 
-        Normales[i] = a.cross_product(b);
-        Normales[i].normalize();
+            Normales[i] = a.cross_product(b);
+            Normales[i].normalize();
+        }
     }
-}
+    else{
+        NormaleS.resize(Vertices.size());
 
-void _object3D::calcNormalesGuoraud()
-{
-    int i = 0;
+        for (unsigned long i = 0; i < Triangles.size(); ++i){
+            NormaleS[Triangles[i]._0] += Normales[i];
+            NormaleS[Triangles[i]._1] += Normales[i];
+            NormaleS[Triangles[i]._2] += Normales[i];
+        }
+
+        for (unsigned long i = 0; i < NormaleS.size(); ++i) {
+            NormaleS[i].normalize();
+        }
+    }
 }

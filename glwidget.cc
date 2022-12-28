@@ -98,7 +98,7 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
 /*****************************************************************************/
 
 void _gl_widget::mouseZoomEvent(QWheelEvent *Event){
-    int dist = Event->angleDelta().y();
+    int dist = Event->pixelDelta().x();
 
     if (perspectiva){
         if (dist > 0){
@@ -143,7 +143,6 @@ void _gl_widget::mouseMoveEvent(QMouseEvent *Event)
     update();
 }
 
-
 /*****************************************************************************/
 /*                            Limpiar ventana                                */
 /*****************************************************************************/
@@ -152,8 +151,6 @@ void _gl_widget::clear_window()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
-
-
 
 /*****************************************************************************/
 /*                     Transformación de proyección                          */
@@ -169,8 +166,6 @@ void _gl_widget::change_projection()
   if (perspectiva) glFrustum(X_MIN,X_MAX,Y_MIN,Y_MAX,FRONT_PLANE_PERSPECTIVE, BACK_PLANE_PERSPECTIVE);
   else glOrtho(X_MIN / vista, X_MAX / vista, Y_MIN / vista, Y_MAX / vista, FRONT_PLANE_PERSPECTIVE, 10000);
 }
-
-
 
 /*****************************************************************************/
 /*                           Posicionar cámara                               */
@@ -284,9 +279,9 @@ void _gl_widget::draw_light(){
     /// JADE
     if (num_mat == 0){
         m0.brillo = 12.8;
-        m0.ambiental = _vertex3f(0.135, 0.2225, 0.1575);
-        m0.difusa = _vertex3f(0.54, 0.89, 0.63);
-        m0.especular = _vertex3f(0.316228, 0.316228, 0.316228);
+        m0.ambiental = _vertex4f(0.135, 0.2225, 0.1575, 0.95);
+        m0.difusa = _vertex4f(0.54, 0.89, 0.63, 0.95);
+        m0.especular = _vertex4f(0.316228, 0.316228, 0.316228, 0.95);
 
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m0.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m0.ambiental);
@@ -297,9 +292,9 @@ void _gl_widget::draw_light(){
     /// CYAN PLASTIC
     else if (num_mat == 1){
         m1.brillo = 32;
-        m1.ambiental = _vertex3f(0, 0.1, 0.06);
-        m1.difusa = _vertex3f(0, 0.50980392, 0.50980392);
-        m1.especular = _vertex3f(0.50980392, 0.50980392, 0.50980392);
+        m1.ambiental = _vertex4f(0, 0.1, 0.06, 1);
+        m1.difusa = _vertex4f(0, 0.50980392, 0.50980392, 1);
+        m1.especular = _vertex4f(0.50980392, 0.50980392, 0.50980392, 1);
 
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m1.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m1.ambiental);
@@ -309,10 +304,10 @@ void _gl_widget::draw_light(){
 
     /// YELLOW RUBBER
     else if (num_mat == 2){
-        m2.brillo = 100;
-        m2.ambiental = _vertex3f(0.05, 0.05 , 0);
-        m2.difusa = _vertex3f(0.5 , 0.5, 0.4);
-        m2.especular = _vertex3f(0.7, 0.7, 0.04);
+        m2.brillo = 10;
+        m2.ambiental = _vertex4f(0.05, 0.05 , 0, 1);
+        m2.difusa = _vertex4f(0.5 , 0.5, 0.4, 1);
+        m2.especular = _vertex4f(0.7, 0.7, 0.04, 1);
 
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m2.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m2.ambiental);
@@ -324,10 +319,10 @@ void _gl_widget::draw_light(){
     if (luz0.activada){
         glDisable(GL_LIGHT1);
 
-        luz0.posicion = _vertex4f(1, 1, 1, 0);
-        luz0.ambiental = _vertex4f(1, 0, 1, 1);
+        luz0.posicion = _vertex4f(200, 300, 200, 0);
+        luz0.ambiental = _vertex4f(0.2, 0.2, 0.2, 1);
         luz0.difusa = _vertex4f(1, 1, 1, 1);
-        luz0.especular = _vertex4f(1, 1, 0, 1);
+        luz0.especular = _vertex4f(1, 1, 1, 1);
 
         glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*)&luz0.posicion);
         glLightfv(GL_LIGHT0, GL_AMBIENT, (GLfloat*)&luz0.ambiental);
@@ -339,12 +334,13 @@ void _gl_widget::draw_light(){
 
     /////////////////////////////////LUZ 1/////////////////////////////////////
     if (luz1.activada){
+        glPushMatrix();
         glDisable(GL_LIGHT0);
 
-        luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
+        luz1.posicion = _vertex4f(1, -1, 1, 0);
         luz1.ambiental = _vertex4f(1, 0, 1, 1);
-        luz1.difusa = _vertex4f(1, 1, 1, 1);
-        luz1.especular = _vertex4f(1, 1, 0, 1);
+        luz1.difusa = _vertex4f(1, 0, 1, 1);
+        luz1.especular = _vertex4f(1, 0, 1, 1);
 
         glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1.posicion);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
@@ -357,6 +353,7 @@ void _gl_widget::draw_light(){
         glPopMatrix();
 
         glEnable(GL_LIGHT1);
+        glPopMatrix();
     }
 }
 

@@ -64,38 +64,12 @@ _window::_window()
   File_menu->addAction(Exit);
   File_menu->setAttribute(Qt::WA_AlwaysShowToolTips);
 
-  setWindowTitle(tr("Práctica 4"));
+  setWindowTitle(tr("Prácticas IG"));
 
   // animacion
   QTimer *Timer = new QTimer();
   Timer->start(35);
   connect(Timer, SIGNAL(timeout()), GL_widget, SLOT(animacion()));
-
-
-  // Leer imagen
-  /*QString File_name("image.jpg");
-  QImage Image;
-  QImageReader Reader(File_name);
-  Reader.setAutoTransform(true);
-  Image = Reader.read();
-  if (Image.isNull()) {
-    QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-                             QMessageBox::tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
-    exit(-1);
-  }
-  Image=Image.mirrored();
-  Image=Image.convertToFormat(QImage::Format_RGB888);*/
-
-
-  // Code to control the application of the texture
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-  // Code to pass the image to OpenGL to form a texture 2D
-  //glTexImage2D(GL_TEXTURE_2D,0,3,Image.width(),Image.height(),0,GL_RGB,GL_UNSIGNED_BYTE,Image.bits());
 
   resize(800,800);
 }

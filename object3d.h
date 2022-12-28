@@ -23,6 +23,7 @@ class _object3D:public _basic_object3D
 public:
     vector<_vertex3ui> Triangles;
     vector<_vertex3f> Normales;
+    vector<_vertex3f> NormaleS;
     vector<_vertex3f> VerticesTextura;
 
     void draw(int mode);
@@ -32,8 +33,7 @@ public:
     void draw_light();
     void draw_texture();
 
-    void calcNormales();
-    void calcNormalesGuoraud();
+    void calcNormales(int modo = 0);
 };
 
 #endif // OBJECT3D_H
