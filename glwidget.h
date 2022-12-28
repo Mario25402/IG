@@ -113,7 +113,6 @@ private:
 
   Iluminacion luz0, luz1;
   Material m0, m1, m2;
-
   bool flat, gouraud;
   int num_mat;
 

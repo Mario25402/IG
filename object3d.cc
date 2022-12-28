@@ -71,6 +71,25 @@ void _object3D::draw_chess()
      glEnd();
 }
 
+void _object3D::draw_texture()
+{
+    glEnable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    glBegin(GL_TRIANGLES);
+
+    for (unsigned int i = 0; i < Triangles.size(); ++i){
+        glTexCoord3f(VerticesTextura[Triangles[i]._0].x, VerticesTextura[Triangles[i]._0].y, VerticesTextura[Triangles[i]._0].z);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
+        glTexCoord3f(VerticesTextura[Triangles[i]._1].x, VerticesTextura[Triangles[i]._1].y, VerticesTextura[Triangles[i]._1].z);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
+        glTexCoord3f(VerticesTextura[Triangles[i]._2].x, VerticesTextura[Triangles[i]._2].y, VerticesTextura[Triangles[i]._2].z);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
+    }
+
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
 /*****************************************************************************/
 
 void _object3D::calcNormales()

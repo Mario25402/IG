@@ -92,22 +92,3 @@ _dashboard::_dashboard(float Size, int n)
 
     calcNormales();
 }
-
-void _dashboard::draw_texture()
-{
-    glEnable(GL_TEXTURE_2D);
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    glBegin(GL_TRIANGLES);
-
-    for (unsigned int i = 0; i < Triangles.size(); ++i){
-        glTexCoord2f(VerticesTextura[Triangles[i]._0].x, VerticesTextura[Triangles[i]._0].y);
-        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
-        glTexCoord2f(VerticesTextura[Triangles[i]._1].x, VerticesTextura[Triangles[i]._1].y);
-        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
-        glTexCoord2f(VerticesTextura[Triangles[i]._2].x, VerticesTextura[Triangles[i]._2].y);
-        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
-    }
-
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-}

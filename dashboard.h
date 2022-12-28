@@ -8,8 +8,6 @@ class _dashboard:public _object3D
 public:
     _dashboard(float Size=1.0);
     _dashboard(float Size, int n);
-
-    void draw_texture();
 };
 
 #endif // DASHBOARD_H

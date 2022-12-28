@@ -266,15 +266,12 @@ void _gl_widget::draw_objects()
   ////////////////////////////////Texturas/////////////////////////////////////
   if (Draw_texture){
       if (Object==OBJECT_DASHBOARD) Tablero.draw_texture();
+      //if (Object==OBJECT_CUBE) Cube.draw_texture();
 
       /*if (flat) glShadeModel(GL_FLAT);
       else if (gouraud) glShadeModel(GL_SMOOTH);*/
   }
 }
-
-/*****************************************************************************/
-/*                         Configuración luces                               */
-/*****************************************************************************/
 
 void _gl_widget::draw_light(){
     glEnable(GL_LIGHTING);
@@ -291,33 +288,33 @@ void _gl_widget::draw_light(){
         m0.difusa = _vertex3f(0.54, 0.89, 0.63);
         m0.especular = _vertex3f(0.316228, 0.316228, 0.316228);
 
-        glMaterialf(GL_FRONT, GL_SHININESS, m0.brillo);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m0.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m0.ambiental);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m0.difusa);
         glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m0.especular);
     }
 
     /// CYAN PLASTIC
-    if (num_mat == 1){
+    else if (num_mat == 1){
         m1.brillo = 32;
-        m1.ambiental = _vertex3f(0.0, 0.1, 0.06);
-        m1.difusa = _vertex3f(0.0, 0.50980392, 0.50980392);
+        m1.ambiental = _vertex3f(0, 0.1, 0.06);
+        m1.difusa = _vertex3f(0, 0.50980392, 0.50980392);
         m1.especular = _vertex3f(0.50980392, 0.50980392, 0.50980392);
 
-        glMaterialf(GL_FRONT, GL_SHININESS, m1.brillo);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m1.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m1.ambiental);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m1.difusa);
         glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m1.especular);
     }
 
     /// YELLOW RUBBER
-    if (num_mat == 2){
+    else if (num_mat == 2){
         m2.brillo = 100;
-        m2.ambiental = _vertex3f(0.05, 0.05 , 0.0);
+        m2.ambiental = _vertex3f(0.05, 0.05 , 0);
         m2.difusa = _vertex3f(0.5 , 0.5, 0.4);
         m2.especular = _vertex3f(0.7, 0.7, 0.04);
 
-        glMaterialf(GL_FRONT, GL_SHININESS, m2.brillo);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, (GLfloat) m2.brillo);
         glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &m2.ambiental);
         glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &m2.difusa);
         glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &m2.especular);
@@ -325,7 +322,7 @@ void _gl_widget::draw_light(){
 
     ////////////////////////////////LUZ 0//////////////////////////////////////
     if (luz0.activada){
-        //luz0.posicion = _vertex4f(-1, 1, 0, 0.3);
+        luz0.posicion = _vertex4f(1, 1, 1, 0);
         luz0.ambiental = _vertex4f(1, 0, 1, 1);
         luz0.difusa = _vertex4f(1, 1, 1, 1);
         luz0.especular = _vertex4f(1, 1, 0, 1);
@@ -340,29 +337,11 @@ void _gl_widget::draw_light(){
 
     /////////////////////////////////LUZ 1/////////////////////////////////////
     if (luz1.activada){
+        luz0.activada = false;
         luz1.posicion = _vertex4f(-1, 1, 0, 0.3);
         luz1.ambiental = _vertex4f(1, 0, 1, 1);
         luz1.difusa = _vertex4f(1, 1, 1, 1);
         luz1.especular = _vertex4f(1, 1, 0, 1);
-
-        if (num_mat == 0){
-            glMaterialf(GL_FRONT, GL_SHININESS, 20);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-        }
-        if (num_mat == 1){
-            glMaterialf(GL_FRONT, GL_SHININESS, 87);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-        }
-        if (num_mat == 2){
-            glMaterialf(GL_FRONT, GL_SHININESS, 109);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, (GLfloat *) &luz1.ambiental);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat *) &luz1.difusa);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat *) &luz1.especular);
-        }
 
         glLightfv(GL_LIGHT1, GL_POSITION, (GLfloat*)&luz1.posicion);
         glLightfv(GL_LIGHT1, GL_AMBIENT, (GLfloat*)&luz1.ambiental);
@@ -483,12 +462,6 @@ void _gl_widget::initializeGL()
   max_zoom  = false;
   max_boton = false;
   max_flash = false;
-
-  flat = false;
-  gouraud = false;
-  luz0.activada = false;
-  luz1.activada = false;
-  num_mat = -1;
 
   perspectiva = true;
   old_x = Observer_angle_x;
