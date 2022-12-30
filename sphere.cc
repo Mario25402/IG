@@ -8,7 +8,7 @@ _sphere::_sphere(){
     _plyObject ply(PERFIL);
     vector <_vertex3f> Perfil = ply.getVertices();
     _rotation rotation(100, Perfil, Vertices, Triangles);
-    calcNormales();
+    calcNormales(1);
 }
 
 _sphere::_sphere(int n){
@@ -22,5 +22,5 @@ _sphere::_sphere(int n){
     }
 
     _rotation rotation(100, Perfil, Vertices, Triangles);
-    calcNormales();
+    calcNormales(1);
 }

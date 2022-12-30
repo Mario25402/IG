@@ -53,13 +53,19 @@ void _object3D::draw_fill()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
 
+    //if (IsSelected) glColor3fv((GLfloat *) &YEllOW);
+
     for (unsigned int i=0;i<Triangles.size();i++){
-        glNormal3fv((GLfloat *) &Normales[i]);
+
+        glNormal3fv((GLfloat *) &NormalesFlat[i]);
 
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
     }
+
+    for (unsigned long i = 0; i < NormalesSmooth.size(); ++i)
+        glNormal3fv((GLfloat *) &NormalesSmooth[i]);
 
      glEnd();
 }
@@ -114,28 +120,29 @@ void _object3D::draw_texture()
 
 void _object3D::calcNormales(int modo)
 {
-    if (modo == 0){
-        Normales.resize(Triangles.size());
+    NormalesFlat.resize(Triangles.size());
 
-        for (unsigned long i = 0; i < Triangles.size(); ++i){
-            _vertex3f a = Vertices[Triangles[i]._1] - Vertices[Triangles[i]._0];
-            _vertex3f b = Vertices[Triangles[i]._2] - Vertices[Triangles[i]._0];
+    for (unsigned int i=0;i<Triangles.size();i++){
+        _vertex3f a = Vertices[Triangles[i]._1] - Vertices[Triangles[i]._0];
+        _vertex3f b = Vertices[Triangles[i]._2] - Vertices[Triangles[i]._0];
 
-            Normales[i] = a.cross_product(b);
-            Normales[i].normalize();
-        }
+        NormalesFlat[i] = a.cross_product(b);
+        NormalesFlat[i].normalize();
     }
-    else{
-        NormaleS.resize(Vertices.size());
 
-        for (unsigned long i = 0; i < Triangles.size(); ++i){
-            NormaleS[Triangles[i]._0] += Normales[i];
-            NormaleS[Triangles[i]._1] += Normales[i];
-            NormaleS[Triangles[i]._2] += Normales[i];
+    if (modo != 0){
+        NormalesSmooth.resize(Vertices.size());
+
+        for (unsigned int i = 0; i < Triangles.size(); i++)
+        {
+            NormalesSmooth[Triangles[i]._0] += NormalesFlat[i];
+            NormalesSmooth[Triangles[i]._1] += NormalesFlat[i];
+            NormalesSmooth[Triangles[i]._2] += NormalesFlat[i];
         }
 
-        for (unsigned long i = 0; i < NormaleS.size(); ++i) {
-            NormaleS[i].normalize();
+        for (unsigned int i = 0; i < NormalesSmooth.size(); i++)
+        {
+            NormalesSmooth[i].normalize();
         }
     }
 }

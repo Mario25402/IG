@@ -75,9 +75,11 @@ protected:
   void initializeGL() Q_DECL_OVERRIDE;
   void keyPressEvent(QKeyEvent *Keyevent) Q_DECL_OVERRIDE;
   void mouseMoveEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
-  void mouseZoomEvent(QWheelEvent *Event);
+  void wheelEvent(QWheelEvent *Event) Q_DECL_OVERRIDE;
+  void mousePressEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
   void pick();
   void draw_light();
+  vector<_vertex3f> draw_selection(_object3D objeto);
 
 
 private:

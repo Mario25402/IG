@@ -79,11 +79,11 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
       case Qt::Key_F3:Draw_light = !Draw_light, flat = true, gouraud = false;break;
       case Qt::Key_F4:Draw_light = !Draw_light, gouraud = true, flat = false;break;
       case Qt::Key_F5:Draw_texture = !Draw_texture;break;
-      case Qt::Key_F6:flat = true, gouraud = false;break;
-      case Qt::Key_F7:gouraud= true, flat = false;break;
+      case Qt::Key_F6:Draw_texture = true, flat = true, gouraud = false;break;
+      case Qt::Key_F7:Draw_texture = true, gouraud= true, flat = false;break;
 
-      case Qt::Key_J:luz0.activada = true, luz1.activada = false;break;
-      case Qt::Key_K:luz1.activada = true, luz0.activada = false;break;
+      case Qt::Key_J:luz0.activada = !luz0.activada, luz1.activada = false;break;
+      case Qt::Key_K:luz1.activada = !luz1.activada, luz0.activada = false;break;
       case Qt::Key_M:((++num_mat) %= 3);break;
       case Qt::Key_C:perspectiva = true;break;
       case Qt::Key_V:perspectiva = false;break;
@@ -97,25 +97,23 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
 /*                            Zoom de ratón                                  *////////////////////////
 /*****************************************************************************/
 
-void _gl_widget::mouseZoomEvent(QWheelEvent *Event){
-    int dist = Event->pixelDelta().x();
+void _gl_widget::wheelEvent(QWheelEvent *Event){
+    int dist = Event->pixelDelta().y();
 
-    if (perspectiva){
+    if (perspectiva)
+    {
         if (dist > 0){
-            if (Observer_distance > 0)
-                Observer_distance -= 0.2;
+            if (Observer_distance > 0) Observer_distance -= 0.2;
         }
-        else if (dist < 0)
-            Observer_distance += 0.2;
+        else if (dist < 0) Observer_distance += 0.2;
     }
 
-    else{
+    else
+    {
         if (dist > 0){
-            if (vista > 0.01)
-                vista -= 0.01;
+            if (vista > 0.01) vista -= 0.01;
         }
-        else if (dist < 0.01)
-            vista += 0.01;
+        else if (dist < 0.01) vista += 0.01;
     }
 
     Event->accept();
@@ -144,6 +142,14 @@ void _gl_widget::mouseMoveEvent(QMouseEvent *Event)
 }
 
 /*****************************************************************************/
+/*                      Click derecho del ratón                              */
+/*****************************************************************************/
+
+void _gl_widget::mousePressEvent(QMouseEvent *Event){
+    if (Event->button() == Qt::RightButton) pick();
+}
+
+/*****************************************************************************/
 /*                            Limpiar ventana                                */
 /*****************************************************************************/
 
@@ -164,7 +170,7 @@ void _gl_widget::change_projection()
   // formato(x_minimo,x_maximo, y_minimo, y_maximo,Front_plane, plano_traser)
   // Front_plane>0  Back_plane>PlanoDelantero)
   if (perspectiva) glFrustum(X_MIN,X_MAX,Y_MIN,Y_MAX,FRONT_PLANE_PERSPECTIVE, BACK_PLANE_PERSPECTIVE);
-  else glOrtho(X_MIN / vista, X_MAX / vista, Y_MIN / vista, Y_MAX / vista, FRONT_PLANE_PERSPECTIVE, 10000);
+  else glOrtho(X_MIN / vista, X_MAX / vista, Y_MIN / vista, Y_MAX / vista, FRONT_PLANE_PERSPECTIVE, BACK_PLANE_PERSPECTIVE);
 }
 
 /*****************************************************************************/
@@ -182,7 +188,7 @@ void _gl_widget::change_observer()
 }
 
 /*****************************************************************************/
-/*                            Dibujo de objetos                              *////////////////////
+/*                            Dibujo de objetos                              */
 /*****************************************************************************/
 
 void _gl_widget::draw_objects()
@@ -261,10 +267,6 @@ void _gl_widget::draw_objects()
   ////////////////////////////////Texturas/////////////////////////////////////
   if (Draw_texture){
       if (Object==OBJECT_DASHBOARD) Tablero.draw_texture();
-      //if (Object==OBJECT_CUBE) Cube.draw_texture();
-
-      /*if (flat) glShadeModel(GL_FLAT);
-      else if (gouraud) glShadeModel(GL_SMOOTH);*/
   }
 }
 
@@ -386,97 +388,99 @@ void _gl_widget::resizeGL(int Width1, int Height1)
 void _gl_widget::initializeGL()
 {
 
-  /////////////////////////////////GLEW////////////////////////////////////////
+      /////////////////////////////////GLEW////////////////////////////////////
 
-  /*glewExperimental = GL_TRUE;
-  int err = glewInit();
-  if (GLEW_OK != err){
-    QMessageBox MsgBox(this);
-    MsgBox.setText("Error: There is not OpenGL drivers\n\nPlease, "
-                   "look for the information of your GPU "
-                   "(AMD, INTEL or NVIDIA) and install the drivers");
-    MsgBox.exec();
-    Window->close();
-  }*/
+      glewInit();
 
-  ////////////////////////////////Programa/////////////////////////////////////
+      /*glewExperimental = GL_TRUE;
+      int err = glewInit();
+      if (GLEW_OK != err){
+        QMessageBox MsgBox(this);
+        MsgBox.setText("Error: There is not OpenGL drivers\n\nPlease, "
+                       "look for the information of your GPU "
+                       "(AMD, INTEL or NVIDIA) and install the drivers");
+        MsgBox.exec();
+        Window->close();
+      }*/
 
-  const GLubyte* strm;
+      ////////////////////////////////Programa/////////////////////////////////
 
-  strm = glGetString(GL_VENDOR);
-  std::cerr << "Vendor: " << strm << "\n";
-  strm = glGetString(GL_RENDERER);
-  std::cerr << "Renderer: " << strm << "\n";
-  strm = glGetString(GL_VERSION);
-  std::cerr << "OpenGL Version: " << strm << "\n";
+      const GLubyte* strm;
 
-  if (strm[0] == '1'){
-    std::cerr << "Only OpenGL 1.X supported!\n";
-    exit(-1);
-  }
+      strm = glGetString(GL_VENDOR);
+      std::cerr << "Vendor: " << strm << "\n";
+      strm = glGetString(GL_RENDERER);
+      std::cerr << "Renderer: " << strm << "\n";
+      strm = glGetString(GL_VERSION);
+      std::cerr << "OpenGL Version: " << strm << "\n";
 
-  strm = glGetString(GL_SHADING_LANGUAGE_VERSION);
-  std::cerr << "GLSL Version: " << strm << "\n";
+      if (strm[0] == '1'){
+        std::cerr << "Only OpenGL 1.X supported!\n";
+        exit(-1);
+      }
 
-  int Max_texture_size=0;
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &Max_texture_size);
-  std::cerr << "Max texture size: " << Max_texture_size << "\n";
+      strm = glGetString(GL_SHADING_LANGUAGE_VERSION);
+      std::cerr << "GLSL Version: " << strm << "\n";
 
-  glClearColor(1.0,1.0,1.0,1.0);
-  glEnable(GL_DEPTH_TEST);
+      int Max_texture_size=0;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &Max_texture_size);
+      std::cerr << "Max texture size: " << Max_texture_size << "\n";
 
-  ////////////////////////////////Texturas/////////////////////////////////////
+      glClearColor(1.0,1.0,1.0,1.0);
+      glEnable(GL_DEPTH_TEST);
 
-  // Code for reading an image
-  QString File_name("/home/mario/Escritorio/IG/texturas/dia_8192.jpg");
-  QImageReader Reader(File_name);
-  Reader.setAutoTransform(true);
-  QImage Image = Reader.read();
-  if (Image.isNull()){
-      QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-                               tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
-      exit(-1);
-  }
-  Image = Image.mirrored();
-  Image = Image.convertToFormat(QImage::Format_RGB888);
+      ////////////////////////////////Texturas/////////////////////////////////
 
-  // Code to control the application of the texture
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+      // Code for reading an image
+      QString File_name("/home/mario/Escritorio/IG/texturas/dia_8192.jpg");
+      QImageReader Reader(File_name);
+      Reader.setAutoTransform(true);
+      QImage Image = Reader.read();
+      if (Image.isNull()){
+          QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
+                                   tr("Cannot load %1.").arg(QDir::toNativeSeparators(File_name)));
+          exit(-1);
+      }
+      Image = Image.mirrored();
+      Image = Image.convertToFormat(QImage::Format_RGB888);
 
-  // Code to pass the image to OpenGL to form a texture 2D
-  glTexImage2D(GL_TEXTURE_2D, 0, 3, Image.width(), Image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, Image.bits());
+      // Code to control the application of the texture
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
-  /////////////////////////////////Variables///////////////////////////////////
+      // Code to pass the image to OpenGL to form a texture 2D
+      glTexImage2D(GL_TEXTURE_2D, 0, 3, Image.width(), Image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, Image.bits());
 
-  Observer_angle_x=0;
-  Observer_angle_y=0;
-  Observer_distance=DEFAULT_DISTANCE;
+      /////////////////////////////////Variables///////////////////////////////
 
-  Draw_point=false;
-  Draw_line=true;
-  Draw_fill=false;
-  Draw_chess=false;
+      Observer_angle_x=0;
+      Observer_angle_y=0;
+      Observer_distance=DEFAULT_DISTANCE;
 
-  Draw_light=false;
-  Draw_texture=false;
+      Draw_point=false;
+      Draw_line=true;
+      Draw_fill=false;
+      Draw_chess=false;
 
-  max_zoom  = false;
-  max_boton = false;
-  max_flash = false;
+      Draw_light=false;
+      Draw_texture=false;
 
-  num_mat = 0;
-  flat = true, gouraud = false;
-  luz0.activada = true; luz1.activada = false;
-  luz1.angulo = 0;
+      max_zoom  = false;
+      max_boton = false;
+      max_flash = false;
 
-  perspectiva = true;
-  old_x = Observer_angle_x;
-  old_y = Observer_angle_y;
-  vista = 0.05;
+      num_mat = 0;
+      flat = true, gouraud = false;
+      luz0.activada = true; luz1.activada = false;
+      luz1.angulo = 0;
+
+      perspectiva = true;
+      old_x = Observer_angle_x;
+      old_y = Observer_angle_y;
+      vista = 0.05;
 }
 
 /*****************************************************************************/
@@ -545,66 +549,84 @@ void _gl_widget::animacion()
 
 void _gl_widget::pick()
 {
-  makeCurrent();
+    makeCurrent();
 
-  // Frame Buffer Object to do the off-screen rendering
-  GLuint FBO;
-  glGenFramebuffers(1,&FBO);
-  glBindFramebuffer(GL_FRAMEBUFFER,FBO);
+    // Frame Buffer Object to do the off-screen rendering
+    GLuint FBO;
+    glGenFramebuffers(1,&FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER,FBO);
 
-  // Texture for drawing
-  GLuint Color_texture;
-  glGenTextures(1,&Color_texture);
-  glBindTexture(GL_TEXTURE_2D,Color_texture);
-  // RGBA8
-  glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, Window->width(),Window->height());
-  // this implies that there is not mip mapping
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    // Texture for drawing
+    GLuint Color_texture;
+    glGenTextures(1,&Color_texture);
+    glBindTexture(GL_TEXTURE_2D,Color_texture);
+    // RGBA8
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, Window->width(),Window->height());
+    // this implies that there is not mip mapping
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
-  // Texure for computing the depth
-  GLuint Depth_texture;
-  glGenTextures(1,&Depth_texture);
-  glBindTexture(GL_TEXTURE_2D,Depth_texture);
-  // Float
-  glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, Window->width(),Window->height());
+    // Texure for computing the depth
+    GLuint Depth_texture;
+    glGenTextures(1,&Depth_texture);
+    glBindTexture(GL_TEXTURE_2D,Depth_texture);
+    // Float
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, Window->width(),Window->height());
 
-  // Attatchment of the textures to the FBO
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,Color_texture,0);
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,Depth_texture,0);
+    // Attatchment of the textures to the FBO
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,Color_texture,0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,Depth_texture,0);
 
-  // OpenGL will draw to these buffers (only one in this case)
-  static const GLenum Draw_buffers[]={GL_COLOR_ATTACHMENT0};
-  glDrawBuffers(1,Draw_buffers);
+    // OpenGL will draw to these buffers (only one in this case)
+    static const GLenum Draw_buffers[]={GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1,Draw_buffers);
 
-  /*************************/
+    /*************************/
 
-  // dibujar escena para seleccion
+    // dibujar escena para seleccion
 
-  /*************************/
+    auto data = draw_selection(Cube);
+    glBufferData(GL_FRAMEBUFFER, data.size(), &data, GL_STATIC_DRAW);
 
-  // get the pixel
-  int Color;
-  glReadBuffer(GL_FRONT);
-  glPixelStorei(GL_PACK_ALIGNMENT,1);
-  //glReadPixels(Selection_position_x,Selection_position_y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&Color);
+    /*************************/
 
-  /*************************/
+    // get the pixel
+    int Color;
+    glReadBuffer(GL_FRONT);
+    glPixelStorei(GL_PACK_ALIGNMENT,1);
+    //glReadPixels(Selection_position_x,Selection_position_y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&Color);
 
-  // convertir de RGB a identificador
+    /*************************/
 
-  /*Red = (Position & 0x00FF0000) >> 16;
-  Green = (Position & 0x0000FF00) >> 8;
-  Blue = (Position & 0x000000FF);*/
+    // convertir de RGB a identificador
+
+    /*Red = (Position & 0x00FF0000) >> 16;
+    Green = (Position & 0x0000FF00) >> 8;
+    Blue = (Position & 0x000000FF);*/
 
 
-  // actualizar el identificador de la parte seleccionada en el objeto
+    // actualizar el identificador de la parte seleccionada en el objeto
 
-  /*************************/
+    /*float red = Red /255.0;
+    float green = Green /255.0;
+    float blue = Blue /255.0;*/
 
-  glDeleteTextures(1,&Color_texture);
-  glDeleteTextures(1,&Depth_texture);
-  glDeleteFramebuffers(1,&FBO);
-  // the normal framebuffer takes the control of drawing
-  glBindFramebuffer(GL_DRAW_FRAMEBUFFER,defaultFramebufferObject());
+    /*************************/
+
+    glDeleteTextures(1,&Color_texture);
+    glDeleteTextures(1,&Depth_texture);
+    glDeleteFramebuffers(1,&FBO);
+    // the normal framebuffer takes the control of drawing
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER,defaultFramebufferObject());
+}
+
+vector<_vertex3f> _gl_widget::draw_selection(_object3D objeto){
+    vector<_vertex3f> data;
+
+    for (unsigned long i = 0; i < objeto.Triangles.size(); ++i){
+        data[i] = _vertex3f(i/objeto.Triangles.size(),i/objeto.Triangles.size(),i/objeto.Triangles.size());
+    }
+
+
+    return data;
 }

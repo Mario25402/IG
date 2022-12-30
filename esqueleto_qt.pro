@@ -62,9 +62,9 @@ SOURCES += \
   glwidget.cc \
   window.cc
 
-INCLUDEPATH += /home/dmartin/codigo/funciontecas/glew/include
+INCLUDEPATH += /home/mario/Escritorio/IG/glew-2.1.0/include
 
-LIBS += -L/home/mario/codigo/funciontecas/glew/lib -lGLEW \
+LIBS += -L/home/mario/Escritorio/IG/glew-2.1.0/lib -lGLEW \
 -L/usr/X11R6/lib64 -lGL
 
 

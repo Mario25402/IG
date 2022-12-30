@@ -22,9 +22,12 @@ class _object3D:public _basic_object3D
 {
 public:
     vector<_vertex3ui> Triangles;
-    vector<_vertex3f> Normales;
-    vector<_vertex3f> NormaleS;
+    vector<_vertex3f> NormalesFlat;
+    vector<_vertex3f> NormalesSmooth;
     vector<_vertex3f> VerticesTextura;
+
+    bool IsSelected;
+    _vertex3f selected;
 
     void draw(int mode);
     void draw_line();
