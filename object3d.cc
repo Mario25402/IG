@@ -53,12 +53,11 @@ void _object3D::draw_fill()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
 
-    //if (IsSelected) glColor3fv((GLfloat *) &YEllOW);
-
     for (unsigned int i=0;i<Triangles.size();i++){
+        if (selected == i) glColor3fv((GLfloat *) &YEllOW);
+        else glColor3fv((GLfloat *) &BLACK);
 
         glNormal3fv((GLfloat *) &NormalesFlat[i]);
-
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
@@ -145,4 +144,36 @@ void _object3D::calcNormales(int modo)
             NormalesSmooth[i].normalize();
         }
     }
+}
+
+void _object3D::draw_selection()
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_TRIANGLES);
+
+    for (unsigned int i=0;i<Triangles.size();i++){
+      float red = (i & 0x00FF0000) >> 16;
+      float green = (i & 0x0000FF00) >> 8;
+      float blue = (i & 0x000000FF);
+
+      red /= 255.0;
+      green /= 255.0;
+      blue /= 255.0;
+
+      _vertex3f color(red, green, blue);
+
+      //cout << red << ", " << green << ", " << blue << endl;
+
+      glColor3fv((GLfloat *) &color);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i][0]]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i][1]]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i][2]]);
+    }
+    glEnd();
+
+}
+
+void _object3D::select(float indice)
+{
+    this->selected = indice;
 }

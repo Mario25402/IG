@@ -27,7 +27,7 @@ public:
     vector<_vertex3f> VerticesTextura;
 
     bool IsSelected;
-    _vertex3f selected;
+    float selected;
 
     void draw(int mode);
     void draw_line();
@@ -35,6 +35,8 @@ public:
     void draw_chess();
     void draw_light();
     void draw_texture();
+    void draw_selection();
+    void select(float indice);
 
     void calcNormales(int modo = 0);
 };

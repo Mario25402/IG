@@ -121,6 +121,9 @@ private:
   bool perspectiva;
   int old_x, old_y;
   float vista;
+
+  float Selection_position_x;
+  float Selection_position_y;
 };
 
 #endif

@@ -146,7 +146,14 @@ void _gl_widget::mouseMoveEvent(QMouseEvent *Event)
 /*****************************************************************************/
 
 void _gl_widget::mousePressEvent(QMouseEvent *Event){
-    if (Event->button() == Qt::RightButton) pick();
+    if (Event->button() == Qt::RightButton){
+        Selection_position_x = Event->position().x();
+        Selection_position_y = Event->position().y();
+
+        Selection_position_y *= -1;
+        Selection_position_y += Window->height();
+        pick();
+    }
 }
 
 /*****************************************************************************/
@@ -585,8 +592,7 @@ void _gl_widget::pick()
 
     // dibujar escena para seleccion
 
-    auto data = draw_selection(Cube);
-    glBufferData(GL_FRAMEBUFFER, data.size(), &data, GL_STATIC_DRAW);
+    Cube.draw_selection();
 
     /*************************/
 
@@ -594,22 +600,21 @@ void _gl_widget::pick()
     int Color;
     glReadBuffer(GL_FRONT);
     glPixelStorei(GL_PACK_ALIGNMENT,1);
-    //glReadPixels(Selection_position_x,Selection_position_y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&Color);
+    glReadPixels(Selection_position_x,Selection_position_y,1,1,GL_RGBA,GL_UNSIGNED_BYTE,&Color);
 
     /*************************/
 
     // convertir de RGB a identificador
+    float R = (Color & 0x000000FF);
+    float G = (Color & 0x0000FF00) >> 8;
+    float B = (Color & 0x00FF0000) >> 16;
 
-    /*Red = (Position & 0x00FF0000) >> 16;
-    Green = (Position & 0x0000FF00) >> 8;
-    Blue = (Position & 0x000000FF);*/
-
+    float identificador = 256*256*R +256*G + B;
 
     // actualizar el identificador de la parte seleccionada en el objeto
 
-    /*float red = Red /255.0;
-    float green = Green /255.0;
-    float blue = Blue /255.0;*/
+    Cube.select(identificador);
+    update();
 
     /*************************/
 
@@ -618,15 +623,4 @@ void _gl_widget::pick()
     glDeleteFramebuffers(1,&FBO);
     // the normal framebuffer takes the control of drawing
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER,defaultFramebufferObject());
-}
-
-vector<_vertex3f> _gl_widget::draw_selection(_object3D objeto){
-    vector<_vertex3f> data;
-
-    for (unsigned long i = 0; i < objeto.Triangles.size(); ++i){
-        data[i] = _vertex3f(i/objeto.Triangles.size(),i/objeto.Triangles.size(),i/objeto.Triangles.size());
-    }
-
-
-    return data;
 }
