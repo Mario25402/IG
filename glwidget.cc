@@ -154,6 +154,8 @@ void _gl_widget::mousePressEvent(QMouseEvent *Event){
         Selection_position_y += Window->height();
         pick();
     }
+
+    update();
 }
 
 /*****************************************************************************/
@@ -592,7 +594,7 @@ void _gl_widget::pick()
 
     // dibujar escena para seleccion
 
-    Cube.draw_selection();
+    Draw_selection();
 
     /*************************/
 

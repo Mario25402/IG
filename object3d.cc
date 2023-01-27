@@ -152,28 +152,29 @@ void _object3D::draw_selection()
     glBegin(GL_TRIANGLES);
 
     for (unsigned int i=0;i<Triangles.size();i++){
-      float red = (i & 0x00FF0000) >> 16;
-      float green = (i & 0x0000FF00) >> 8;
       float blue = (i & 0x000000FF);
+      float green = (i & 0x0000FF00) >> 8;
+      float red = (i & 0x00FF0000) >> 16;
 
-      red /= 255.0;
-      green /= 255.0;
-      blue /= 255.0;
+      blue /= 255;
+      green /= 255;
+      red /= 255;
 
       _vertex3f color(red, green, blue);
 
       //cout << red << ", " << green << ", " << blue << endl;
 
       glColor3fv((GLfloat *) &color);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i][0]]);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i][1]]);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i][2]]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
     }
-    glEnd();
 
+    glEnd();
 }
 
 void _object3D::select(float indice)
 {
-    this->selected = indice;
+    if (selected == indice) selected = -1;
+    else selected = indice;
 }
