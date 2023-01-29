@@ -127,6 +127,7 @@ private:
   float orthoLimit;
   int old_x, old_y;
 
+  int width, height;
   float Xpicked;
   float Ypicked;
 };

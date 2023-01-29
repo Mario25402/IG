@@ -4,7 +4,7 @@
 #include "object3d.h"
 #include "cube.h"
 #include "tetrahedron.h"
-#include "cylinder.h"
+#include "cone.h"
 #include "sphere.h"
 
 /*******************************************************/
@@ -12,12 +12,11 @@
 class _group : public _object3D
 {
 public:
-   _tetrahedron *tetraedro;
-    _cube *cubo;
-    _cylinder *cilindro;
-    _sphere *esfera;
+   _tetrahedron tetraedro;
+    _cube cubo;
+    _cone cono;
+    _sphere esfera;
 
-    _group();
     void draw_point();
     void draw_line();
     void draw_fill();

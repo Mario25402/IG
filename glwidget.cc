@@ -219,8 +219,8 @@ void _gl_widget::keyPressEvent(QKeyEvent *Keyevent)
         case Qt::Key_Right:Observer_angle_y += ANGLE_STEP;break;
         case Qt::Key_Up:Observer_angle_x -= ANGLE_STEP;break;
         case Qt::Key_Down:Observer_angle_x += ANGLE_STEP;break;
-        case Qt::Key_PageUp:Observer_distance *= 1.2;break;
-        case Qt::Key_PageDown:Observer_distance /= 1.2;break;
+        case Qt::Key_PageUp:Observer_distance *= 1.2, orthoLimit *= 1.2;break;
+        case Qt::Key_PageDown:Observer_distance /= 1.2, orthoLimit /= 1.2   ;break;
 
         case Qt::Key_A:modificadores.animado =! modificadores.animado;break;
         case Qt::Key_Q:modificadores.zoom += modificadores.tasa_zoom;
@@ -549,12 +549,14 @@ void _gl_widget::wheelEvent(QWheelEvent *Event){
 /*****************************************************************************/
 
 void _gl_widget::mousePressEvent(QMouseEvent *Event){
-    //int wHeight = this->height();
+    height = Window->height();
+    width = Window->width();
+
     if (Event->button() == Qt::RightButton){
         Xpicked = Event->position().x();
         Ypicked = Event->position().y();
 
-        Ypicked = (Ypicked * -1) + height();
+        Ypicked = (Ypicked * -1) + height;
 
         /*cout << endl << "Coordenada X: " << Xpicked
              << endl << "Coordenada Y: " << Ypicked
@@ -584,7 +586,7 @@ void _gl_widget::pick()
     glGenTextures(1,&Color_texture);
     glBindTexture(GL_TEXTURE_2D,Color_texture);
     // RGBA8
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, width(),height());
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, width,height);
     // this implies that there is not mip mapping
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
@@ -594,7 +596,7 @@ void _gl_widget::pick()
     glGenTextures(1,&Depth_texture);
     glBindTexture(GL_TEXTURE_2D,Depth_texture);
     // Float
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, width(), height());
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, width,height);
 
     // Attatchment of the textures to the FBO
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,Color_texture,0);
@@ -620,15 +622,14 @@ void _gl_widget::pick()
     /*************************/
 
     // convertir de RGB a identificador
-    float R = (Color & 0x000000FF);
-    float G = (Color & 0x0000FF00) >> 8;
-    float B = (Color & 0x00FF0000) >> 16;
 
-    float identificador = 256.0*256.0*R+256.0*G+B;
+    float Red = (Color & 0x000000FF);
+    float Green = (Color & 0x0000FF00) >> 8;
+    float Blue = (Color & 0x00FF0000) >> 16;
 
-    // actualizar el identificador de la parte seleccionada en el objeto
+    float color = 256.0*256.0*Red + 256.0*Green + Blue;
 
-    draw_selection(identificador);
+    draw_selection(color);
     update();
 
     /*************************/
