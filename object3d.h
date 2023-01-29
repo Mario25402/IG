@@ -26,12 +26,11 @@ public:
     vector<_vertex3f> NormalesSmooth;
     vector<_vertex3f> VerticesTextura;
 
-    bool IsSelected;
-    float selected;
+    float selected = -1.0;
 
     void draw(int mode);
     void draw_line();
-    void draw_fill();
+    void draw_fill(bool flat = true);
     void draw_chess();
     void draw_light();
     void draw_texture();

@@ -26,6 +26,7 @@
 #include "camara_headers/camara.h"
 #include "iluminacion.h"
 #include "dashboard.h"
+#include "group.h"
 
 
 namespace _gl_widget_ne {
@@ -74,12 +75,14 @@ protected:
   void paintGL() Q_DECL_OVERRIDE;
   void initializeGL() Q_DECL_OVERRIDE;
   void keyPressEvent(QKeyEvent *Keyevent) Q_DECL_OVERRIDE;
+
   void mouseMoveEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
   void wheelEvent(QWheelEvent *Event) Q_DECL_OVERRIDE;
   void mousePressEvent(QMouseEvent *Event) Q_DECL_OVERRIDE;
-  void pick();
+
   void draw_light();
-  vector<_vertex3f> draw_selection(_object3D objeto);
+  void pick();
+  void draw_selection(int indice = -1);
 
 
 private:
@@ -94,6 +97,7 @@ private:
   _plyObject Ply;
   Camara Hierarchical;
   _dashboard Tablero{1,4};
+  _group Group;
 
   GradosLibertad modificadores;
 
@@ -114,16 +118,17 @@ private:
   bool max_zoom, max_boton, max_flash;
 
   Iluminacion luz0, luz1;
-  Material m0, m1, m2;
   bool flat, gouraud;
+
+  Material m0, m1, m2;
   int num_mat;
 
   bool perspectiva;
+  float orthoLimit;
   int old_x, old_y;
-  float vista;
 
-  float Selection_position_x;
-  float Selection_position_y;
+  float Xpicked;
+  float Ypicked;
 };
 
 #endif

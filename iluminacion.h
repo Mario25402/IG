@@ -5,7 +5,6 @@
 
 struct Iluminacion{
     bool activada;
-    float angulo;
 
     _vertex4f posicion;
     _vertex4f ambiental;

@@ -21,6 +21,7 @@ HEADERS += \
   cylinder.h \
   dashboard.h \
   file_ply_stl.h \
+  group.h \
   iluminacion.h \
   object3d.h \
   axis.h \
@@ -52,6 +53,7 @@ SOURCES += \
   cylinder.cc \
   dashboard.cc \
   file_ply_stl.cc \
+  group.cc \
   object3d.cc \
   axis.cc \
   ply_object.cc \
