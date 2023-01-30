@@ -10,7 +10,7 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <QOpenGLWidget>
 #include <QKeyEvent>
 #include <iostream>

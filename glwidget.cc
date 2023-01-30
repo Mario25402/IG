@@ -97,9 +97,7 @@ void _gl_widget::initializeGL()
 
       /////////////////////////////////GLEW////////////////////////////////////
 
-      glewInit();
-
-      /*glewExperimental = GL_TRUE;
+      glewExperimental = GL_TRUE;
       int err = glewInit();
       if (GLEW_OK != err){
         QMessageBox MsgBox(this);
@@ -108,7 +106,7 @@ void _gl_widget::initializeGL()
                        "(AMD, INTEL or NVIDIA) and install the drivers");
         MsgBox.exec();
         Window->close();
-      }*/
+      }
 
       ////////////////////////////////Programa/////////////////////////////////
 

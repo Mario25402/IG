@@ -11,7 +11,7 @@
 #define BASIC_OBJECT3D_H
 
 #include <vector>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include "colors.h"
 #include "vertex.h"
 

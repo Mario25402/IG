@@ -142,44 +142,34 @@ void _object3D::calcNormales(int modo)
     if (modo != 0){
         NormalesSmooth.resize(Vertices.size());
 
-        _vertex3f vectorN;
-        vector<_vertex3f> normales;
-        float sumX = 0, sumY = 0, sumZ = 0;
+        vector<_vertex3f> normalesVertice;
 
         for (unsigned int i = 0; i < Vertices.size(); ++i){
-            normales.clear();
+            normalesVertice.clear();
 
             for (unsigned int j = 0; j < Triangles.size(); ++j){
                 if (Triangles[j].x == i or Triangles[j].y == i or Triangles[j].z == i)
-                    normales.push_back(NormalesFlat[j]);
+                    normalesVertice.push_back(NormalesFlat[j]);
             }
 
-            int numNormales = normales.size();
-            sumX = sumY = sumZ = 0;
+            float sumX = 0, sumY = 0, sumZ = 0;
+            int numNormales = normalesVertice.size();
 
             for (int j = 0; j < numNormales; ++j){
-                sumX += normales[j].x;
-                sumY += normales[j].y;
-                sumZ += normales[j].z;
+                sumX += normalesVertice[j].x;
+                sumY += normalesVertice[j].y;
+                sumZ += normalesVertice[j].z;
             }
 
-            vectorN.x = sumX / numNormales;
-            vectorN.y = sumY / numNormales;
-            vectorN.z = sumZ / numNormales;
+            _vertex3f normal;
+            normal.x = sumX / numNormales;
+            normal.y = sumY / numNormales;
+            normal.z = sumZ / numNormales;
 
-            float sumaComponentes = pow(vectorN.x,2) + pow(vectorN.y,2) + pow(vectorN.z,2);
-            float modulo = sqrt(sumaComponentes);
-
-            if (modulo > 0.0){
-                vectorN.x /= modulo;
-                vectorN.y /= modulo;
-                vectorN.z /= modulo;
-                NormalesSmooth[i] = vectorN;
-            }
+            NormalesSmooth[i] = normal.normalize();
         }
     }
 
-    //for (unsigned int i = 0; i < NormalesSmooth.size(); ++i) NormalesSmooth[i].normalize();
 }
 
 /*****************************************************************************/
@@ -192,20 +182,19 @@ void _object3D::draw_selection()
     glBegin(GL_TRIANGLES);
 
     for (unsigned int i=0; i<Triangles.size(); ++i){
-      float blue = (i & 0x000000FF);
-      float green = (i & 0x0000FF00) >> 8;
-      float red = (i & 0x00FF0000) >> 16;
+        float Red = (i & 0x00FF0000) >> 16;
+        float Green = (i & 0x0000FF00) >> 8;
+        float Blue = (i & 0x000000FF);
 
-      blue /= 255.0;
-      green /= 255.0;
-      red /= 255.0;
+        Red /= 255.0;
+        Green /= 255.0;
+        Blue /= 255.0;
+        _vertex3f color(Red, Green, Blue);
 
-      _vertex3f color(red, green, blue);
-
-      glColor3fv((GLfloat *) &color);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
-      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
+        glColor3fv((GLfloat *) &color);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
+        glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
     }
 
     glEnd();

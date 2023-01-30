@@ -64,11 +64,15 @@ SOURCES += \
   glwidget.cc \
   window.cc
 
-INCLUDEPATH += /home/mario/Escritorio/IG/glew-2.1.0/include
 
-LIBS += -L/home/mario/Escritorio/IG/glew-2.1.0/lib -lGLEW \
--L/usr/X11R6/lib64 -lGL
+#TARGET= esqueleto_qt.pro
+INCLUDEPATH += /home/mario/Descargas/glew/include
+LIBS += -L/home/mario/Descargas/glew/lib -lGLEW
 
+#INCLUDEPATH += /usr/include/GL/
+#LIBS += -L/usr/lib -lGLEW
 
+LIBS += -L/usr/X11R6/lib64 -lGL
 CONFIG += c++11
 QT += openglwidgets
+QT += widgets
