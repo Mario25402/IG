@@ -186,10 +186,7 @@ void _object3D::draw_selection()
         float Green = (i & 0x0000FF00) >> 8;
         float Blue = (i & 0x000000FF);
 
-        Red /= 255.0;
-        Green /= 255.0;
-        Blue /= 255.0;
-        _vertex3f color(Red, Green, Blue);
+        _vertex3f color(Red/255, Green/255, Blue/255);
 
         glColor3fv((GLfloat *) &color);
         glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);

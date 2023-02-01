@@ -65,14 +65,8 @@ SOURCES += \
   window.cc
 
 
-#TARGET= esqueleto_qt.pro
-INCLUDEPATH += /home/mario/Descargas/glew/include
-LIBS += -L/home/mario/Descargas/glew/lib -lGLEW
-
-#INCLUDEPATH += /usr/include/GL/
-#LIBS += -L/usr/lib -lGLEW
-
-LIBS += -L/usr/X11R6/lib64 -lGL
+INCLUDEPATH += /usr/include/GL/
+LIBS += -L/usr/X11R6/lib64 -lGL -lGLEW
 CONFIG += c++11
-QT += openglwidgets
 QT += widgets
+QT += openglwidgets

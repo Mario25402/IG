@@ -100,12 +100,13 @@ void _gl_widget::initializeGL()
       glewExperimental = GL_TRUE;
       int err = glewInit();
       if (GLEW_OK != err){
-        QMessageBox MsgBox(this);
+        /*QMessageBox MsgBox(this);
         MsgBox.setText("Error: There is not OpenGL drivers\n\nPlease, "
                        "look for the information of your GPU "
                        "(AMD, INTEL or NVIDIA) and install the drivers");
         MsgBox.exec();
-        Window->close();
+        Window->close();*/
+        printf("%s", glewGetErrorString(err));
       }
 
       ////////////////////////////////Programa/////////////////////////////////
@@ -507,11 +508,10 @@ void _gl_widget::mouseMoveEvent(QMouseEvent *Event)
 
     if (old_x < x) Observer_angle_y += ANGLE_STEP*2;
     else if (old_x > x) Observer_angle_y -= ANGLE_STEP*2;
+    old_x = x;
 
     if (old_y < y) Observer_angle_x += ANGLE_STEP*2;
     else if (old_y > y) Observer_angle_x -= ANGLE_STEP*2;
-
-    old_x = x;
     old_y = y;
 
     update();
@@ -547,18 +547,11 @@ void _gl_widget::wheelEvent(QWheelEvent *Event){
 /*****************************************************************************/
 
 void _gl_widget::mousePressEvent(QMouseEvent *Event){
-    height = Window->height();
-    width = Window->width();
-
     if (Event->button() == Qt::RightButton){
         Xpicked = Event->position().x();
         Ypicked = Event->position().y();
 
-        Ypicked = (Ypicked * -1) + height;
-
-        /*cout << endl << "Coordenada X: " << Xpicked
-             << endl << "Coordenada Y: " << Ypicked
-             << endl;*/
+        Ypicked = (Ypicked * -1) + Window->height();
 
         pick();
     }
@@ -584,7 +577,7 @@ void _gl_widget::pick()
     glGenTextures(1,&Color_texture);
     glBindTexture(GL_TEXTURE_2D,Color_texture);
     // RGBA8
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, width,height);
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8, Window->width(),Window->height());
     // this implies that there is not mip mapping
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
@@ -594,7 +587,7 @@ void _gl_widget::pick()
     glGenTextures(1,&Depth_texture);
     glBindTexture(GL_TEXTURE_2D,Depth_texture);
     // Float
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, width,height);
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_DEPTH_COMPONENT24, Window->width(),Window->height());
 
     // Attatchment of the textures to the FBO
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,Color_texture,0);
@@ -603,6 +596,10 @@ void _gl_widget::pick()
     // OpenGL will draw to these buffers (only one in this case)
     static const GLenum Draw_buffers[]={GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1,Draw_buffers);
+
+    // Limpi
+    glClearColor(1.0,1.0,1.0,1.0);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*************************/
 
@@ -620,14 +617,16 @@ void _gl_widget::pick()
     /*************************/
 
     // convertir de RGB a identificador
-
     float Red = (Color & 0x000000FF);
     float Green = (Color & 0x0000FF00) >> 8;
     float Blue = (Color & 0x00FF0000) >> 16;
 
-    float color = 256.0*256.0*Red + 256.0*Green + Blue;
+    //cout << endl << "Rojo: " << Red << " Verde: " << Green << " Azul: " << Blue << endl;
 
-    draw_selection(color);
+    int identificador = (256*256*Red) + (256*Green) + Blue;
+    //cout << endl << "Identificador: " << identificador << endl;
+
+    draw_selection(identificador);
     update();
 
     /*************************/
@@ -655,6 +654,7 @@ void _gl_widget::draw_selection(int indice){
             case OBJECT_SPHERE:Sphere.draw_selection();break;
             case OBJECT_PLY:Ply.draw_selection();break;
             case OBJECT_DASHBOARD:Tablero.draw_selection();break;
+            case OBJECT_GROUP:Group.draw_selection();break;
         }
     }
 
@@ -667,6 +667,7 @@ void _gl_widget::draw_selection(int indice){
             case OBJECT_SPHERE:Sphere.select(indice);break;
             case OBJECT_PLY:Ply.select(indice);break;
             case OBJECT_DASHBOARD:Tablero.select(indice);break;
+            case OBJECT_GROUP:Group.select(indice);break;
         }
     }
 }
