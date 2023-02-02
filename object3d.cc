@@ -144,6 +144,7 @@ void _object3D::calcNormales(int modo)
 
         vector<_vertex3f> normalesVertice;
 
+        // Encontrar los triangulos que comparten un vertice
         for (unsigned int i = 0; i < Vertices.size(); ++i){
             normalesVertice.clear();
 
@@ -155,12 +156,14 @@ void _object3D::calcNormales(int modo)
             float sumX = 0, sumY = 0, sumZ = 0;
             int numNormales = normalesVertice.size();
 
+            // Sumar todas las componentes de una coodenada
             for (int j = 0; j < numNormales; ++j){
                 sumX += normalesVertice[j].x;
                 sumY += normalesVertice[j].y;
                 sumZ += normalesVertice[j].z;
             }
 
+            // Calcular la media
             _vertex3f normal;
             normal.x = sumX / numNormales;
             normal.y = sumY / numNormales;
@@ -205,4 +208,22 @@ void _object3D::select(float indice)
 {
     if (selected == indice) selected = -1;
     else selected = indice;
+}
+
+/*****************************************************************************/
+/*                         Modo relleno por color                            */
+/*****************************************************************************/
+
+void _object3D::draw_fill(_vertex3f color){
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_TRIANGLES);
+
+    for (unsigned int i = 0; i < Triangles.size(); ++i){
+      glColor3fv((GLfloat *) &color);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._0]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._1]);
+      glVertex3fv((GLfloat *) &Vertices[Triangles[i]._2]);
+    }
+
+    glEnd();
 }

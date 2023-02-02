@@ -36,8 +36,8 @@ public:
     void draw_texture();
     void draw_selection();
     void select(float indice);
-
     void calcNormales(int modo = 0);
+    void draw_fill(_vertex3f color);
 };
 
 #endif // OBJECT3D_H

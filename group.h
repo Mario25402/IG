@@ -17,10 +17,15 @@ public:
     _cone cono;
     _sphere esfera;
 
+    int selected = -1;
+
     void draw_point();
     void draw_line();
     void draw_fill();
     void draw_chess();
+    void draw_selection();
+    void select(float indice);
+
 };
 
 /*******************************************************/

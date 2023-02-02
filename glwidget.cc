@@ -267,7 +267,7 @@ void _gl_widget::draw_objects()
 
     /////////////////////////////////Puntos//////////////////////////////////////
     if (Draw_point){
-        glPointSize(3);
+        glPointSize(5);
         glColor3fv((GLfloat *) &MAGENTA);
 
         switch (Object){
@@ -551,6 +551,9 @@ void _gl_widget::mousePressEvent(QMouseEvent *Event){
         Xpicked = Event->position().x();
         Ypicked = Event->position().y();
 
+        /*cout << endl << "Coordenada X: " << Xpicked
+             << " Cordenada Y: " << Ypicked << endl;*/
+
         Ypicked = (Ypicked * -1) + Window->height();
 
         pick();
@@ -597,9 +600,9 @@ void _gl_widget::pick()
     static const GLenum Draw_buffers[]={GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1,Draw_buffers);
 
-    // Limpi
+    // Limpiar buffer
     glClearColor(1.0,1.0,1.0,1.0);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /*************************/
 
