@@ -6,8 +6,10 @@
 class _dashboard:public _object3D
 {
 public:
-    _dashboard(float Size=1.0);
-    _dashboard(float Size, int n);
+    _dashboard(float Size = 1, int n = 3);
+
+    void Tablero(float Size, int n);
+    void Textura(int n);
 };
 
 #endif // DASHBOARD_H

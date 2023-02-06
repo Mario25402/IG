@@ -96,7 +96,7 @@ private:
   _sphere Sphere{25};
   _plyObject Ply;
   Camara Hierarchical;
-  _dashboard Tablero{1,4};
+  _dashboard Tablero{1, 4};
   _group Group;
 
   GradosLibertad modificadores;
